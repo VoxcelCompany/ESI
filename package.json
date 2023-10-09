@@ -29,6 +29,7 @@
     "firebase-admin": "^11.11.0",
     "http": "^0.0.1-security",
     "moment": "^2.29.1",
+    "moment-timezone": "^0.5.43",
     "qs": "^6.11.0",
     "sha1": "^1.1.1",
     "ts-node": "^10.9.1"

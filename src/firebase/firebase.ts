@@ -1,6 +1,6 @@
-const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
-const { getFirestore, } = require('firebase-admin/firestore');
-const { decrypt, encrypt } = require("../tasks/crypter");
+import { cert, initializeApp } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+import { decrypt } from "../tasks/crypter";
 
 const credentials = JSON.parse(decrypt(process.env.GOOGLE_CREDENTIALS_CONTENT).split("\n").join("\\n"));
 initializeApp({
@@ -16,13 +16,9 @@ const db = getFirestore();
  * @param {string} id - Firestore document id.
  * @param {object} data - Firestore document data.
  */
-const createData = async (col, id, data) => {
-  try {
-    const ref = db.collection(col).doc(id);
-    return ref.set(data);
-  } catch (e) {
-    Promise.reject(e);
-  }
+export const createData = (col: string, id: string, data: any): Promise<FirebaseFirestore.WriteResult> => {
+  const ref = db.collection(col).doc(id);
+  return ref.set(data);
 }
 
 /**
@@ -32,12 +28,8 @@ const createData = async (col, id, data) => {
  * @param {string} id - Firestore document id.
  * @param {object} data - Firestore document data.
  */
-const updateData = async (col, id, data) => {
-  try {
-    return await db.collection(col).doc(id).update(data);
-  } catch (e) {
-    Promise.reject(e);
-  }
+export const updateData = (col: string, id: string, data: any): Promise<FirebaseFirestore.WriteResult> => {
+  return db.collection(col).doc(id).update(data);
 }
 
 /**
@@ -45,17 +37,13 @@ const updateData = async (col, id, data) => {
  * Returns null if there's no error, otherwise the error is returned.
  * @param {string} col - Firestore collection name.
  */
-const getAllData = async (col) => {
-  try {
-    let datas = {};
-    const ref = await db.collection(col).get();
-    ref.forEach((doc) => {
-      datas[doc.id] = { ...doc.data() };
-    });
-    return datas
-  } catch (e) {
-    Promise.reject(e);
-  }
+export const getAllData = async (col: string): Promise<{ [key: string]: any }> => {
+  let datas = {};
+  const ref = await db.collection(col).get();
+  ref.forEach((doc) => {
+    datas[doc.id] = { ...doc.data() };
+  });
+  return datas
 }
 
 /**
@@ -64,12 +52,8 @@ const getAllData = async (col) => {
  * @param {string} col - Firestore collection name.
  * @param {string} id - Firestore document id.
  */
-const getData = async (col, id) => {
-  try {
-    return (await db.collection(col).doc(id).get()).data();
-  } catch (e) {
-    Promise.reject(e);
-  }
+export const getData = async (col: string, id: string) => {
+  return (await db.collection(col).doc(id).get()).data();
 }
 
 /**
@@ -78,12 +62,7 @@ const getData = async (col, id) => {
  * @param {string} col - Firestore collection name.
  * @param {string} id - Firestore document id.
  */
-const deleteData = async (col, id) => {
-  try {
-    return await db.collection(col).doc(id).delete();
-  } catch (e) {
-    Promise.reject(e);
-  }
+export const deleteData = async (col: string, id: string): Promise<FirebaseFirestore.WriteResult> => {
+  const ref = db.collection(col).doc(id);
+  return ref.delete();
 }
-
-module.exports = { createData, updateData, getData, getAllData, deleteData };
