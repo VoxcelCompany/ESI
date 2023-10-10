@@ -1,5 +1,5 @@
 import { CacheType, ModalSubmitInteraction } from 'discord.js';
-import { getAllData } from '../firebase/firebase';
+import { getAllData } from '../service/firebase';
 import { getCurrentDate } from '../tasks/dates';
 
 interface IInfoParams {
