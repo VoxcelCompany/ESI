@@ -48,8 +48,16 @@ const getAccessToken = async (): Promise<string> => {
 };
 
 const isTokenValid = (): boolean => {
-  // decode and check exp value
   if (!msAccessToken) return false;
+
+  const base = msAccessToken.split(".")[1];
+
+  const buff = Buffer.from(base, "base64");
+  const json = JSON.parse(buff.toString("ascii"));
+
+  const now = Date.now() / 1000;
+
+  return now < json.exp;
 }
 
 const getEdtInfo = async (cur: ECursus): Promise<Array<Date | string>> => {
