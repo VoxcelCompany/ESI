@@ -32,7 +32,8 @@
     "moment-timezone": "^0.5.43",
     "qs": "^6.11.0",
     "sha1": "^1.1.1",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@flydotio/dockerfile": "^0.4.10",
