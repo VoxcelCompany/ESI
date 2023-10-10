@@ -1,11 +1,12 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import * as XLSX from 'xlsx';
+import { decrypt } from "../tasks/crypter";
 // import * as sha1 from "sha1";
 // import { encrypt, decrypt } from "../tasks/crypter.js";
 // import { getAllData, createData } from "../firebase/firebase.js";
 // import { getCurrentDate } from "../tasks/dates.js";
 
-enum ECursus {
+export enum ECursus {
   RETAIL = "RETAIL",
   CYBER = "CYBER",
 }
@@ -29,7 +30,7 @@ interface IEdtContent {
   afternoon: string
 }
 
-let msRefreshToken: string = process.env.MS_REFRESH_TOKEN;
+let msRefreshToken: string = decrypt(process.env.MS_REFRESH_TOKEN);
 let msAccessToken: string | undefined;
 
 const getAccessToken = async (): Promise<string> => {
@@ -40,7 +41,12 @@ const getAccessToken = async (): Promise<string> => {
     client_id: process.env.MS_APP_CLIENT_ID,
     client_secret: process.env.MS_APP_CLIENT_SECRET
   };
-  const response = await axios.post(url, data);
+
+  const response = await axios.post(url, new URLSearchParams(data), {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    }
+  });
 
   msAccessToken = response.data.access_token;
 
@@ -60,7 +66,7 @@ const isTokenValid = (): boolean => {
   return now < json.exp;
 }
 
-const getEdtInfo = async (cur: ECursus): Promise<Array<Date | string>> => {
+export const getEdtInfo = async (cur: ECursus): Promise<IEdtInfo> => {
   let fileId: string;
   switch (cur) {
     case ECursus.RETAIL:
@@ -71,14 +77,16 @@ const getEdtInfo = async (cur: ECursus): Promise<Array<Date | string>> => {
       break;
   }
 
+  if (!isTokenValid()) await getAccessToken();
+
   const url = `https://graph.microsoft.com/v1.0/me/drives/${process.env.MS_DRIVE_GROUP_ID}/items/${fileId}`;
-  const response = await axios.get(url, {
+  const response: AxiosResponse<IEdtInfo> = await axios.get(url, {
     headers: {
       Authorization: `Bearer ${msAccessToken}`
     }
   });
 
-  return response.data.value;
+  return response.data;
 };
 
 const translateFieldName = (fieldName: string): string => {
@@ -97,7 +105,7 @@ const translateFieldName = (fieldName: string): string => {
   }
 }
 
-const getEdt = async (cur: ECursus): Promise<IEdtContent[]> => {
+export const getEdt = async (cur: ECursus): Promise<IEdtContent[]> => {
   let fileId: string;
   switch (cur) {
     case ECursus.RETAIL:
@@ -107,6 +115,8 @@ const getEdt = async (cur: ECursus): Promise<IEdtContent[]> => {
       fileId = process.env.MS_EXCEL_CYBER_ID;
       break;
   }
+
+  if (!isTokenValid()) await getAccessToken();
 
   const url = `https://graph.microsoft.com/v1.0/me/drives/${process.env.MS_DRIVE_GROUP_ID}/items/${fileId}/content`;
   const response = await axios.get(url, {

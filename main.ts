@@ -1,8 +1,8 @@
 require("dotenv").config();
-import { Client, Events, GatewayIntentBits, Partials, PresenceStatusData, TextChannel } from "discord.js";
+import { ActivityType, Client, Events, GatewayIntentBits, Partials, PresenceStatusData, TextChannel } from "discord.js";
 import config from "./src/config/config.json";
-import { setAllCommands } from "./src/tasks/setAllCommands";
 import { interactionLaunch } from "./src/tasks/commandLauch";
+import { setAllCommands } from "./src/tasks/setAllCommands";
 
 const client = new Client({
 	partials: [
@@ -39,6 +39,11 @@ client.on(Events.ClientReady, () => {
 	console.log(`-------------------------\nLogged in as ${client.user.username} !\nVersion: ` + version + ` ✅\n-------------------------\n`);
 
 	client.user.setStatus(process.env.BOT_STATUS as PresenceStatusData);
+
+	client.user.setActivity({
+		name: "Enigma",
+		type: ActivityType.Competing
+	});
 
 	// TODO Specific to Enigma
 	// edtCheck(client, min); // min = 5, check the edt status every 5 minutes
