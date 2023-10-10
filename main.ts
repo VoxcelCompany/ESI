@@ -2,6 +2,7 @@ require("dotenv").config();
 import { Client, Events, GatewayIntentBits, Partials, PresenceStatusData, TextChannel } from "discord.js";
 import config from "./src/config/config.json";
 import { setAllCommands } from "./src/tasks/setAllCommands";
+import { interactionLaunch } from "./src/tasks/commandLauch";
 const version = config.version;
 
 const authServers: string[] = [
@@ -65,7 +66,7 @@ client.on(Events.ClientReady, () => {
 
 client.on(Events.InteractionCreate, async (interaction) => {
 	if (!bannedUsers.includes(interaction?.user?.id)) {
-		// await interactionLaunch(interaction, client, version, new Date(), uptime);
+		await interactionLaunch(interaction, client, version, new Date(), uptime);
 	}
 });
 
