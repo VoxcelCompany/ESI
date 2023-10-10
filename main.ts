@@ -1,11 +1,6 @@
 require("dotenv").config();
 import { Client, GatewayIntentBits, Partials, Events, PresenceStatusData, TextChannel } from "discord.js";
 import config from "./src/config/config.json";
-import { interactionLaunch } from "./src/tasks/commandLauch";
-import { reactionAdded, reactionRemoved } from "./src/tasks/reactions";
-import { edtReminderCheck, edtSenderCheck, mygesCheck, currentNotesCheck } from "./src/tasks/intervalsCheck";
-import { setAllCommands } from "./src/tasks/setAllCommands";
-require("./server.js");
 const version = config.version;
 
 const authServers: string[] = [
@@ -69,25 +64,25 @@ client.on(Events.ClientReady, () => {
 
 client.on(Events.InteractionCreate, async (interaction) => {
 	if (!bannedUsers.includes(interaction?.user?.id)) {
-		await interactionLaunch(interaction, client, version, new Date(), uptime);
+		// await interactionLaunch(interaction, client, version, new Date(), uptime);
 	}
 });
 
 client.on(Events.MessageReactionAdd, (reaction, user) => {
 	if (!bannedUsers.includes(user.id)) {
-		reactionAdded(reaction, user);
+		// reactionAdded(reaction, user);
 	}
 });
 
 client.on(Events.MessageReactionRemove, (reaction, user) => {
 	if (!bannedUsers.includes(user.id)) {
-		reactionRemoved(reaction, user);
+		// reactionRemoved(reaction, user);
 	}
 });
 
 client.on(Events.GuildCreate, (guild) => {
 	if (authServers.includes(guild.id)) {
-		setAllCommands(guild.id, client);
+		// setAllCommands(guild.id, client);
 	}
 });
 

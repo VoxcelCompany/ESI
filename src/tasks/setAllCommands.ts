@@ -1,6 +1,6 @@
-const { Constants } = require('discord.js');
+import { Client, Constants } from 'discord.js';
 
-const setAllCommands = async (guildId, client) => {
+const setAllCommands = async (guildId: string, client: Client) => {
     const guild = client.guilds.cache.get(guildId);
 
     if (guild) {
