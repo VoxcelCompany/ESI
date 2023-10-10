@@ -1,6 +1,7 @@
 require("dotenv").config();
-import { Client, GatewayIntentBits, Partials, Events, PresenceStatusData, TextChannel } from "discord.js";
+import { Client, Events, GatewayIntentBits, Partials, PresenceStatusData, TextChannel } from "discord.js";
 import config from "./src/config/config.json";
+import { setAllCommands } from "./src/tasks/setAllCommands";
 const version = config.version;
 
 const authServers: string[] = [
@@ -58,7 +59,7 @@ client.on(Events.ClientReady, () => {
 	// mygesCheck(client);
 	// currentNotesCheck(client);
 
-	// setAllCommands(process.env.GLD_ENIGMA, client); // efficom
+	// setAllCommands(process.env.GLD_ENIGMA, client); // enigma
 	// setAllCommands(process.env.GLD_ADMIN, client); // private server
 });
 
@@ -82,7 +83,7 @@ client.on(Events.MessageReactionRemove, (reaction, user) => {
 
 client.on(Events.GuildCreate, (guild) => {
 	if (authServers.includes(guild.id)) {
-		// setAllCommands(guild.id, client);
+		setAllCommands(guild.id, client);
 	}
 });
 
