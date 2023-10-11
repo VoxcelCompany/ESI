@@ -1,6 +1,6 @@
-import {CacheType, ModalSubmitInteraction} from 'discord.js';
+import { CacheType, ModalSubmitInteraction } from 'discord.js';
 import firebaseRepository from '../repository/firebase.repository';
-import {getCurrentDate} from '../utils/dates';
+import { getMomentDate } from '../utils/dates';
 
 interface IInfoParams {
     interaction: ModalSubmitInteraction<CacheType>;
@@ -15,7 +15,7 @@ export const info = async (params: IInfoParams): Promise<any> => {
     const { discordPing, botPing, uptime } = {
         discordPing: `${Math.abs(new Date().getTime() - interaction.createdTimestamp)}ms`,
         botPing: `${new Date().getTime() - new Date(time).getTime()}ms`,
-        uptime: getCurrentDate(botUptime).format("[En ligne depuis le] DD/MM/YYYY [à] HH[h]mm"),
+        uptime: getMomentDate(botUptime).format("[En ligne depuis le] DD/MM/YYYY [à] HH[h]mm"),
     };
 
     await interaction.deferReply({ ephemeral: false });
