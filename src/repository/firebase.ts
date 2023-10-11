@@ -1,10 +1,10 @@
-import { cert, initializeApp } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
-import { decrypt } from "../tasks/crypt";
+import {cert, initializeApp} from 'firebase-admin/app';
+import {getFirestore} from 'firebase-admin/firestore';
+import {decrypt} from "../tasks/crypt";
 
 const credentials = JSON.parse(decrypt(process.env.GOOGLE_CREDENTIALS_CONTENT).split("\n").join("\\n"));
 initializeApp({
-  credential: cert(credentials)
+    credential: cert(credentials),
 });
 
 const db = getFirestore();
@@ -17,9 +17,9 @@ const db = getFirestore();
  * @param {object} data - Firestore document data.
  */
 export const createData = (col: string, id: string, data: any): Promise<FirebaseFirestore.WriteResult> => {
-  const ref = db.collection(col).doc(id);
-  return ref.set(data);
-}
+    const ref = db.collection(col).doc(id);
+    return ref.set(data);
+};
 
 /**
  * Update the document on Firestore
@@ -29,8 +29,8 @@ export const createData = (col: string, id: string, data: any): Promise<Firebase
  * @param {object} data - Firestore document data.
  */
 export const updateData = (col: string, id: string, data: any): Promise<FirebaseFirestore.WriteResult> => {
-  return db.collection(col).doc(id).update(data);
-}
+    return db.collection(col).doc(id).update(data);
+};
 
 /**
  * Collect all data from the Firestore collection.
@@ -38,13 +38,13 @@ export const updateData = (col: string, id: string, data: any): Promise<Firebase
  * @param {string} col - Firestore collection name.
  */
 export const getAllData = async (col: string): Promise<{ [key: string]: any }> => {
-  let datas = {};
-  const ref = await db.collection(col).get();
-  ref.forEach((doc) => {
-    datas[doc.id] = { ...doc.data() };
-  });
-  return datas
-}
+    let datas = {};
+    const ref = await db.collection(col).get();
+    ref.forEach((doc) => {
+        datas[doc.id] = {...doc.data()};
+    });
+    return datas;
+};
 
 /**
  * Collect one data from the Firestore collection.
@@ -53,8 +53,8 @@ export const getAllData = async (col: string): Promise<{ [key: string]: any }> =
  * @param {string} id - Firestore document id.
  */
 export const getData = async (col: string, id: string) => {
-  return (await db.collection(col).doc(id).get()).data();
-}
+    return (await db.collection(col).doc(id).get()).data();
+};
 
 /**
  * Deletes the requested data from Firestore. Do nothing if the data is incorrect.
@@ -63,6 +63,6 @@ export const getData = async (col: string, id: string) => {
  * @param {string} id - Firestore document id.
  */
 export const deleteData = async (col: string, id: string): Promise<FirebaseFirestore.WriteResult> => {
-  const ref = db.collection(col).doc(id);
-  return ref.delete();
-}
+    const ref = db.collection(col).doc(id);
+    return ref.delete();
+};

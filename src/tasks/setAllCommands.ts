@@ -1,17 +1,17 @@
-import { Client, Constants, SlashCommandBuilder, APIApplicationCommandOptionChoice } from 'discord.js';
+import {APIApplicationCommandOptionChoice, Client, SlashCommandBuilder} from 'discord.js';
 
 export const setAllCommands = async (guildId: string, client: Client) => {
     const guild = client.guilds.cache.get(guildId);
-
+    
     if (!guild) return;
-
+    
     const commandsToCreate: Array<SlashCommandBuilder | any> = [];
-
+    
     commandsToCreate.push(new SlashCommandBuilder()
         .setName('aide')
-        .setDescription('Affiche la liste des commandes disponibles par le robot')
-    )
-
+        .setDescription('Affiche la liste des commandes disponibles par le robot'),
+    );
+    
     commandsToCreate.push(new SlashCommandBuilder()
         .setName('edt')
         .setDescription('Affiche l\'emploi du temps sélectionné')
@@ -21,19 +21,19 @@ export const setAllCommands = async (guildId: string, client: Client) => {
                 .setRequired(true)
                 .addChoices({
                     name: 'Semaine actuelle',
-                    value: '1'
+                    value: '1',
                 })
                 .addChoices({
                     name: 'Semaine prochaine',
-                    value: '2'
+                    value: '2',
                 })
                 .addChoices({
                     name: 'Dans deux semaines',
-                    value: '3'
-                })
-        )
-    )
-
+                    value: '3',
+                }),
+        ),
+    );
+    
     // commandsToCreate.push(new SlashCommandBuilder()
     //     .setName('stats')
     //     .setDescription('Affiche les statistiques enregistrées par le robot')
@@ -48,7 +48,7 @@ export const setAllCommands = async (guildId: string, client: Client) => {
     //             .setDescription('Statistiques concernant uniquement les devoirs')
     //     )
     // )
-
+    
     // commandsToCreate.push(new SlashCommandBuilder()
     //     .setName('merci')
     //     .setDescription('Commande de remerciement')
@@ -66,17 +66,17 @@ export const setAllCommands = async (guildId: string, client: Client) => {
     //             })
     //     )
     // )
-
+    
     commandsToCreate.push(new SlashCommandBuilder()
         .setName('info')
-        .setDescription('Affiche diverses informations concernant le robot')
-    )
-
+        .setDescription('Affiche diverses informations concernant le robot'),
+    );
+    
     commandsToCreate.push(new SlashCommandBuilder()
         .setName('wifi')
-        .setDescription('Affiche diverses informations concernant la connexion wifi d\'Enigma')
-    )
-
+        .setDescription('Affiche diverses informations concernant la connexion wifi d\'Enigma'),
+    );
+    
     if (guildId != process.env.GLD_ADMIN) { // PUBLIC COMMANDS
         commandsToCreate.push(new SlashCommandBuilder()
             .setName('devoirs')
@@ -84,7 +84,7 @@ export const setAllCommands = async (guildId: string, client: Client) => {
             .addSubcommand(subcommand =>
                 subcommand
                     .setName('afficher')
-                    .setDescription('Affiche les devoirs actuels')
+                    .setDescription('Affiche les devoirs actuels'),
             )
             .addSubcommand(subcommand =>
                 subcommand
@@ -93,20 +93,20 @@ export const setAllCommands = async (guildId: string, client: Client) => {
                     .addStringOption(option =>
                         option.setName('date')
                             .setDescription('Date au format JJ/MM/AAAA')
-                            .setRequired(true)
+                            .setRequired(true),
                     )
                     .addStringOption(option =>
                         option.setName('matiere')
                             .setDescription('Nom de la matière concernée')
-                            .setRequired(true)
+                            .setRequired(true),
                     )
                     .addStringOption(option =>
                         option.setName('description')
                             .setDescription('Détails du devoir à effectuer')
-                            .setRequired(true)
-                    )
-            )
-        )
+                            .setRequired(true),
+                    ),
+            ),
+        );
     } else { // PRIVATE COMMANDS
         commandsToCreate.push(new SlashCommandBuilder()
             .setName('devoirs')
@@ -114,7 +114,7 @@ export const setAllCommands = async (guildId: string, client: Client) => {
             .addSubcommand(subcommand =>
                 subcommand
                     .setName('afficher')
-                    .setDescription('Affiche les devoirs actuels')
+                    .setDescription('Affiche les devoirs actuels'),
             )
             .addSubcommand(subcommand =>
                 subcommand
@@ -123,29 +123,29 @@ export const setAllCommands = async (guildId: string, client: Client) => {
                     .addStringOption(option =>
                         option.setName('date')
                             .setDescription('Date au format JJ/MM/AAAA')
-                            .setRequired(true)
+                            .setRequired(true),
                     )
                     .addStringOption(option =>
                         option.setName('matiere')
                             .setDescription('Nom de la matière concernée')
-                            .setRequired(true)
+                            .setRequired(true),
                     )
                     .addStringOption(option =>
                         option.setName('description')
                             .setDescription('Détails du devoir à effectuer')
-                            .setRequired(true)
-                    )
-            )
-        )
-
+                            .setRequired(true),
+                    ),
+            ),
+        );
+        
         commandsToCreate.push(new SlashCommandBuilder()
             .setName('esi')
-            .setDescription('Affichage du message de bienvenue')
-        )
+            .setDescription('Affichage du message de bienvenue'),
+        );
     }
-
+    
     // command creation
     await Promise.all(commandsToCreate.map(async (command) => {
         await guild.commands.create(command.toJSON());
     }));
-}
+};

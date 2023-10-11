@@ -1,16 +1,16 @@
-import { CacheType, ModalSubmitInteraction } from "discord.js";
+import {CacheType, ModalSubmitInteraction} from "discord.js";
 
 interface IAideParams {
-    interaction: ModalSubmitInteraction<CacheType>
-    version: string
+    interaction: ModalSubmitInteraction<CacheType>;
+    version: string;
 }
 
 export const aide = async (params: IAideParams): Promise<void> => {
-    const { interaction, version } = params;
+    const {interaction, version} = params;
     await interaction.deferReply({
-        ephemeral: false
-    })
-
+        ephemeral: false,
+    });
+    
     await interaction.editReply({
         embeds: [{
             title: `Aide`,
@@ -22,11 +22,11 @@ export const aide = async (params: IAideParams): Promise<void> => {
             fields: [
                 {
                     "name": `/edt {semaine}`,
-                    "value": `Permet de récupérer l'emploi du temps sélectionné. Trois semaines vous serront proposés lors de l'entrée de la commande, à savoir qu'à partir de samedi la semaine actuelle est considérée comme étant la semaine du lundi suivant.`
+                    "value": `Permet de récupérer l'emploi du temps sélectionné. Trois semaines vous serront proposés lors de l'entrée de la commande, à savoir qu'à partir de samedi la semaine actuelle est considérée comme étant la semaine du lundi suivant.`,
                 },
                 {
                     "name": `/devoirs afficher`,
-                    "value": `Permet de récupérer l'ensemble des devoirs à effectuer. Les précédents devoirs n'y sont plus affichés.`
+                    "value": `Permet de récupérer l'ensemble des devoirs à effectuer. Les précédents devoirs n'y sont plus affichés.`,
                 },
                 // {
                 //     "name": `/merci [personnels/classement]`,
@@ -42,21 +42,21 @@ export const aide = async (params: IAideParams): Promise<void> => {
                 // },
                 {
                     "name": `/devoirs ajouter [date] [matière] [description du devoir]`,
-                    "value": `Permet de faire une demande d'ajout de devoir.`
+                    "value": `Permet de faire une demande d'ajout de devoir.`,
                 },
                 {
                     "name": `/wifi`,
-                    "value": `Permet de récupérer les informations à propos de la connexion internet d'Enigma.`
+                    "value": `Permet de récupérer les informations à propos de la connexion internet d'Enigma.`,
                 },
                 {
                     "name": `/info`,
-                    "value": `Permet de récupérer le ping des différents API utilisés ainsi que la version du bot.\n­`
-                }
+                    "value": `Permet de récupérer le ping des différents API utilisés ainsi que la version du bot.\n­`,
+                },
             ],
             timestamp: new Date().toISOString(),
             footer: {
-                text: `Version ${version}`
-            }
-        }]
+                text: `Version ${version}`,
+            },
+        }],
     });
 };
