@@ -11,27 +11,23 @@ export enum ECommandType {
 export const interactionLaunch = async (interaction: any | Interaction<CacheType> | ModalSubmitInteraction<CacheType>, client: Client, version: string, callDate: Date, uptime: Date): Promise<void> => {
     const commandType = interaction.isCommand() ? ECommandType.COMMAND : ECommandType.BUTTON;
     const commandName = commandType == ECommandType.COMMAND ?
-        interaction.commandName.toUpperCase() : interaction.customId.toUpperCase();
-    
+        interaction.commandName.toLowerCase() : interaction.customId.toLowerCase();
+
     try {
-        switch (commandName) {
-            case 'AIDE':
-                return await aide({interaction: interaction, version: version});
-            case 'INFO':
-                return await info({interaction: interaction, version: version, time: callDate, botUptime: uptime});
-            case 'WIFI':
-                return await wifi({interaction: interaction, version: version});
-            // case 'EDT':
+        switch (true) {
+            case /aide/.test(commandName):
+                return await aide({ interaction: interaction, version: version });
+            case /info/.test(commandName):
+                return await info({ interaction: interaction, version: version, time: callDate, botUptime: uptime });
+            case /wifi/.test(commandName):
+                return await wifi({ interaction: interaction, version: version });
+            // case /edt/.test(commandName):
             //     return await edt({ num: interaction.options.get('semaine').value, interaction: interaction, client: client, type: commandType });
-            // case 'EDT1':
-            //     return await edt({ num: '1', interaction: interaction, client: client, type: commandType });
-            // case 'EDT2':
-            //     return await edt({ num: '2', interaction: interaction, client: client, type: commandType });
-            // case 'EDT3':
-            //     return await edt({ num: '3', interaction: interaction, client: client, type: commandType });
-            // case 'DEV':
+            // case /edt[0-9]+/.test(commandName):
+            //     return await edt({ num: commandName.replace('edt', ''), interaction: interaction, client: client, type: commandType });
+            // case /devoir/.test(commandName):
             //     return await devoir({ interaction: interaction, client: client, version: version, type: commandType });
-            // case 'DEVOIRS':
+            // case /devoirs/.test(commandName):
             //     if (interaction.options._subcommand == "afficher") {
             //         return await devoir({ interaction: interaction, client: client, version: version, type: commandType });
             //     } else if (interaction.options._subcommand == "forceadd") {
@@ -41,16 +37,13 @@ export const interactionLaunch = async (interaction: any | Interaction<CacheType
             //     } else {
             //         return await addDevoir({ interaction: interaction, client: client });
             //     }
-            // case 'STATS':
+            // case /stats/.test(commandName):
             //     if (interaction.options?._subcommand == "devoirs") {
             //         return await devstats({ interaction: interaction, version: version });
             //     }
             //     return await stats({ interaction: interaction, client: client, version: version, type: commandType });
-            // case 'DEVSTATS':
+            // case /devstats/.test(commandName):
             //     return await devstats({ interaction: interaction, version: version });
-            // PRIVATE
-            case 'ESI':
-            // return await sendBIEMessage({ interaction: interaction, client: client });
             default:
                 return await interaction?.deferUpdate();
         }

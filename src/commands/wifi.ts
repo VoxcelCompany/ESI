@@ -18,8 +18,8 @@ export const wifi = async (params: IWifiParams): Promise<any> => {
             fields: [
                 {
                     name: '🔰 Nom de la connexion',
-                    value: '`ENIGMA`',
-                    inline: false,
+                    value: '`ENIGMA SCHOOL`',
+                    inline: false
                 }, {
                     name: '🫣 Mot de passe',
                     value: '`CleCan1026#`\n­',
