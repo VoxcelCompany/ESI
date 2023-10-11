@@ -1,6 +1,6 @@
 import { Client, SlashCommandBuilder } from 'discord.js';
 
-export const setAllCommands = async (guildId: string, client: Client) => {
+export const setSlashCommands = async (guildId: string, client: Client) => {
     const guild = client.guilds.cache.get(guildId);
 
     if (!guild) return;

@@ -1,5 +1,5 @@
 import axios, {AxiosResponse} from "axios";
-import {decrypt} from "../tasks/crypt";
+import {decrypt} from "../utils/crypt";
 import EdtFile from "../models/EdtFile";
 // import * as sha1 from "sha1";
 // import { encrypt, decrypt } from "../tasks/crypter.js";

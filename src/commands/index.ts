@@ -1,16 +1,12 @@
 import { CacheType, Client, Interaction, ModalSubmitInteraction, TextChannel } from "discord.js";
-import { aide } from "../commands/aide";
-import { info } from "../commands/info";
-import { wifi } from "../commands/wifi";
+import { aide } from "./aide";
+import { info } from "./info";
+import { wifi } from "./wifi";
+import CommandType from "../utils/enum/CommandType";
 
-export enum ECommandType {
-    COMMAND = "COMMAND",
-    BUTTON = "BUTTON"
-}
-
-export const interactionLaunch = async (interaction: any | Interaction<CacheType> | ModalSubmitInteraction<CacheType>, client: Client, version: string, callDate: Date, uptime: Date): Promise<void> => {
-    const commandType = interaction.isCommand() ? ECommandType.COMMAND : ECommandType.BUTTON;
-    const commandName = commandType == ECommandType.COMMAND ?
+export default async (interaction: any | Interaction<CacheType> | ModalSubmitInteraction<CacheType>, client: Client, version: string, callDate: Date, uptime: Date): Promise<void> => {
+    const commandType = interaction.isCommand() ? CommandType.COMMAND : CommandType.BUTTON;
+    const commandName = commandType == CommandType.COMMAND ?
         interaction.commandName.toLowerCase() : interaction.customId.toLowerCase();
 
     try {

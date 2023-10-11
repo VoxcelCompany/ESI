@@ -1,7 +1,7 @@
 require("dotenv").config();
 import { ActivityType, Client, Events, GatewayIntentBits, Partials, PresenceStatusData, TextChannel } from "discord.js";
-import { interactionLaunch } from "./src/tasks/commandLauch";
-import { setAllCommands } from "./src/tasks/setAllCommands";
+import interactionLaunch from "./src/commands";
+import { setSlashCommands } from "./src/commands/setSlashCommands";
 import packageConfig from "./package.json";
 
 const client = new Client({
@@ -65,7 +65,7 @@ client.on(Events.MessageReactionRemove, (reaction, user) => {
 });
 
 client.on(Events.GuildCreate, (guild) => {
-	if (authServers.includes(guild.id)) setAllCommands(guild.id, client);
+	if (authServers.includes(guild.id)) setSlashCommands(guild.id, client);
 });
 
 process.on("uncaughtException", function (err) {

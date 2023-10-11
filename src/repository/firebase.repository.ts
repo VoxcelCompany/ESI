@@ -1,6 +1,6 @@
 import {cert, initializeApp} from 'firebase-admin/app';
 import {getFirestore} from 'firebase-admin/firestore';
-import {decrypt} from "../tasks/crypt";
+import {decrypt} from "../utils/crypt";
 import {firestore} from "firebase-admin";
 import Firestore = firestore.Firestore;
 

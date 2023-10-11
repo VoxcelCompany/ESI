@@ -1,6 +1,6 @@
 import {CacheType, ModalSubmitInteraction} from 'discord.js';
 import firebaseRepository from '../repository/firebase.repository';
-import {getCurrentDate} from '../tasks/dates';
+import {getCurrentDate} from '../utils/dates';
 
 interface IInfoParams {
     interaction: ModalSubmitInteraction<CacheType>;
