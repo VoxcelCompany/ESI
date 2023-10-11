@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import * as XLSX from 'xlsx';
-import { decrypt } from "../tasks/crypter";
+import { decrypt } from "../tasks/crypt";
 // import * as sha1 from "sha1";
 // import { encrypt, decrypt } from "../tasks/crypter.js";
 // import { getAllData, createData } from "../firebase/firebase.js";
@@ -72,9 +72,11 @@ export const getEdtInfo = async (cur: ECursus): Promise<IEdtInfo> => {
     case ECursus.RETAIL:
       fileId = process.env.MS_EXCEL_RETAIL_ID;
       break;
-    default:
+    case ECursus.CYBER:
       fileId = process.env.MS_EXCEL_CYBER_ID;
       break;
+    default:
+      throw new Error("Invalid cursus");
   }
 
   if (!isTokenValid()) await getAccessToken();
