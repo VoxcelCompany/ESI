@@ -1,8 +1,8 @@
 require("dotenv").config();
 import { ActivityType, Client, Events, GatewayIntentBits, Partials, PresenceStatusData, TextChannel } from "discord.js";
-import config from "./src/config/config.json";
 import { interactionLaunch } from "./src/tasks/commandLauch";
 import { setAllCommands } from "./src/tasks/setAllCommands";
+import packageConfig from "./package.json";
 
 const client = new Client({
 	partials: [
@@ -33,10 +33,9 @@ const authServers: string[] = [
 	process.env.GLD_ADMIN
 ];
 const uptime = new Date();
-const version = config.version;
 
 client.on(Events.ClientReady, () => {
-	console.log(`-------------------------\nLogged in as ${client.user.username} !\nVersion: ` + version + ` ✅\n-------------------------\n`);
+	console.log(`-------------------------\nLogged in as ${client.user.username} !\nVersion: ${packageConfig.version} ✅\n-------------------------\n`);
 
 	client.user.setStatus(process.env.BOT_STATUS as PresenceStatusData);
 
@@ -54,7 +53,7 @@ client.on(Events.ClientReady, () => {
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
-	if (!interaction.user.bot) await interactionLaunch(interaction, client, version, new Date(), uptime);
+	if (!interaction.user.bot) await interactionLaunch(interaction, client, packageConfig.version, new Date(), uptime);
 });
 
 client.on(Events.MessageReactionAdd, (reaction, user) => {
