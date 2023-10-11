@@ -4,7 +4,7 @@ import EdtFile from "../models/EdtFile";
 // import * as sha1 from "sha1";
 // import { encrypt, decrypt } from "../tasks/crypter.js";
 // import { getAllData, createData } from "../firebase/firebase.js";
-// import { getCurrentDate } from "../tasks/dates.js";
+// import { getMomentDate } from "../tasks/dates.js";
 
 class EnigmaRepository {
     msRefreshToken: string;

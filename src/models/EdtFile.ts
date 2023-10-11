@@ -4,8 +4,8 @@ export default interface EdtFile {
     lastModifiedDateTime: string;
     lastModifiedBy: {
         user: {
-            displayName: string
-            email: string
-        }
+            displayName: string | false;
+            email: string | false;
+        };
     };
 };
