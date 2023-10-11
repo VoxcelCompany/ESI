@@ -1,8 +1,8 @@
 require("dotenv").config();
 import { ActivityType, Client, Events, GatewayIntentBits, Partials, PresenceStatusData, TextChannel } from "discord.js";
+import packageConfig from "./package.json";
 import interactionLaunch from "./src/commands";
 import { setSlashCommands } from "./src/commands/setSlashCommands";
-import packageConfig from "./package.json";
 
 const client = new Client({
 	partials: [
