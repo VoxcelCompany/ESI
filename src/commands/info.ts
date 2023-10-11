@@ -1,6 +1,6 @@
-import { CacheType, ModalSubmitInteraction } from 'discord.js';
-import { getAllData } from '../repository/firebase';
-import { getCurrentDate } from '../tasks/dates';
+import {CacheType, ModalSubmitInteraction} from 'discord.js';
+import firebaseRepository from '../repository/firebase.repository';
+import {getCurrentDate} from '../tasks/dates';
 
 interface IInfoParams {
     interaction: ModalSubmitInteraction<CacheType>;
@@ -21,7 +21,7 @@ export const info = async (params: IInfoParams): Promise<any> => {
     await interaction.deferReply({ ephemeral: false });
 
     const firstDbDate = new Date();
-    await getAllData('edt');
+    await firebaseRepository.getAllData('edt');
     const dbDate = `${new Date().getTime() - firstDbDate.getTime()}ms`;
 
     return await interaction.editReply({
