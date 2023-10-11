@@ -1,4 +1,4 @@
-import {CacheType, ModalSubmitInteraction} from "discord.js";
+import { CacheType, ModalSubmitInteraction } from "discord.js";
 
 interface IAideParams {
     interaction: ModalSubmitInteraction<CacheType>;
@@ -6,11 +6,11 @@ interface IAideParams {
 }
 
 export const aide = async (params: IAideParams): Promise<void> => {
-    const {interaction, version} = params;
+    const { interaction, version } = params;
     await interaction.deferReply({
         ephemeral: false,
     });
-    
+
     await interaction.editReply({
         embeds: [{
             title: `Aide`,

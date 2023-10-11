@@ -1,6 +1,6 @@
-import axios, {AxiosResponse} from "axios";
+import axios, { AxiosResponse } from "axios";
 import * as XLSX from 'xlsx';
-import {decrypt} from "../tasks/crypt";
+import { decrypt } from "../tasks/crypt";
 // import * as sha1 from "sha1";
 // import { encrypt, decrypt } from "../tasks/crypter.js";
 // import { getAllData, createData } from "../firebase/firebase.js";
@@ -41,28 +41,28 @@ const getAccessToken = async (): Promise<string> => {
         client_id: process.env.MS_APP_CLIENT_ID,
         client_secret: process.env.MS_APP_CLIENT_SECRET,
     };
-    
+
     const response = await axios.post(url, new URLSearchParams(data), {
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
         },
     });
-    
+
     msAccessToken = response.data.access_token;
-    
+
     return msAccessToken;
 };
 
 const isTokenValid = (): boolean => {
     if (!msAccessToken) return false;
-    
+
     const base = msAccessToken.split(".")[1];
-    
+
     const buff = Buffer.from(base, "base64");
     const json = JSON.parse(buff.toString("ascii"));
-    
+
     const now = Date.now() / 1000;
-    
+
     return now < json.exp;
 };
 
@@ -78,16 +78,16 @@ export const getEdtInfo = async (cur: ECursus): Promise<IEdtInfo> => {
         default:
             throw new Error("Invalid cursus");
     }
-    
+
     if (!isTokenValid()) await getAccessToken();
-    
+
     const url = `https://graph.microsoft.com/v1.0/me/drives/${process.env.MS_DRIVE_GROUP_ID}/items/${fileId}`;
     const response: AxiosResponse<IEdtInfo> = await axios.get(url, {
         headers: {
             Authorization: `Bearer ${msAccessToken}`,
         },
     });
-    
+
     return response.data;
 };
 
@@ -117,9 +117,9 @@ export const getEdt = async (cur: ECursus): Promise<IEdtContent[]> => {
             fileId = process.env.MS_EXCEL_CYBER_ID;
             break;
     }
-    
+
     if (!isTokenValid()) await getAccessToken();
-    
+
     const url = `https://graph.microsoft.com/v1.0/me/drives/${process.env.MS_DRIVE_GROUP_ID}/items/${fileId}/content`;
     const response = await axios.get(url, {
         headers: {
@@ -127,14 +127,14 @@ export const getEdt = async (cur: ECursus): Promise<IEdtContent[]> => {
         },
         responseType: "arraybuffer",
     });
-    
-    const workbook = XLSX.read(response.data, {type: 'buffer'});
-    
+
+    const workbook = XLSX.read(response.data, { type: 'buffer' });
+
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
-    
-    const rawDatas: any[][] = XLSX.utils.sheet_to_json(worksheet, {header: 1});
-    
+
+    const rawDatas: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
     const header = rawDatas[1];
     return rawDatas.slice(2).map((row) => {
         const obj: IEdtContent = {
@@ -143,7 +143,7 @@ export const getEdt = async (cur: ECursus): Promise<IEdtContent[]> => {
             morning: undefined,
             afternoon: undefined,
         };
-        
+
         row.forEach((value: any, i: number) => {
             while (!header[i] && i > 0) {
                 i--;

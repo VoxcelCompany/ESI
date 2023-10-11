@@ -1,6 +1,6 @@
-import {cert, initializeApp} from 'firebase-admin/app';
-import {getFirestore} from 'firebase-admin/firestore';
-import {decrypt} from "../tasks/crypt";
+import { cert, initializeApp } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+import { decrypt } from "../tasks/crypt";
 
 const credentials = JSON.parse(decrypt(process.env.GOOGLE_CREDENTIALS_CONTENT).split("\n").join("\\n"));
 initializeApp({
@@ -41,7 +41,7 @@ export const getAllData = async (col: string): Promise<{ [key: string]: any }> =
     let datas = {};
     const ref = await db.collection(col).get();
     ref.forEach((doc) => {
-        datas[doc.id] = {...doc.data()};
+        datas[doc.id] = { ...doc.data() };
     });
     return datas;
 };

@@ -2,16 +2,16 @@ import { Client, SlashCommandBuilder } from 'discord.js';
 
 export const setAllCommands = async (guildId: string, client: Client) => {
     const guild = client.guilds.cache.get(guildId);
-    
+
     if (!guild) return;
-    
+
     const commandsToCreate: Array<SlashCommandBuilder | any> = [];
-    
+
     commandsToCreate.push(new SlashCommandBuilder()
         .setName('aide')
         .setDescription('Affiche la liste des commandes disponibles par le robot'),
     );
-    
+
     commandsToCreate.push(new SlashCommandBuilder()
         .setName('edt')
         .setDescription('Affiche l\'emploi du temps sélectionné')
@@ -33,7 +33,7 @@ export const setAllCommands = async (guildId: string, client: Client) => {
                 }),
         ),
     );
-    
+
     // commandsToCreate.push(new SlashCommandBuilder()
     //     .setName('stats')
     //     .setDescription('Affiche les statistiques enregistrées par le robot')
@@ -48,7 +48,7 @@ export const setAllCommands = async (guildId: string, client: Client) => {
     //             .setDescription('Statistiques concernant uniquement les devoirs')
     //     )
     // )
-    
+
     // commandsToCreate.push(new SlashCommandBuilder()
     //     .setName('merci')
     //     .setDescription('Commande de remerciement')
@@ -66,17 +66,17 @@ export const setAllCommands = async (guildId: string, client: Client) => {
     //             })
     //     )
     // )
-    
+
     commandsToCreate.push(new SlashCommandBuilder()
         .setName('info')
         .setDescription('Affiche diverses informations concernant le robot'),
     );
-    
+
     commandsToCreate.push(new SlashCommandBuilder()
         .setName('wifi')
         .setDescription('Affiche diverses informations concernant la connexion wifi d\'Enigma'),
     );
-    
+
     if (guildId != process.env.GLD_ADMIN) { // PUBLIC COMMANDS
         commandsToCreate.push(new SlashCommandBuilder()
             .setName('devoirs')
@@ -137,13 +137,13 @@ export const setAllCommands = async (guildId: string, client: Client) => {
                     ),
             ),
         );
-        
+
         commandsToCreate.push(new SlashCommandBuilder()
             .setName('esi')
             .setDescription('Affichage du message de bienvenue'),
         );
     }
-    
+
     // command creation
     await Promise.all(commandsToCreate.map(async (command) => {
         await guild.commands.create(command.toJSON());

@@ -1,4 +1,4 @@
-import {CacheType, InteractionEditReplyOptions, ModalSubmitInteraction} from "discord.js";
+import { CacheType, InteractionEditReplyOptions, ModalSubmitInteraction } from "discord.js";
 
 interface IWifiParams {
     interaction: ModalSubmitInteraction<CacheType>;
@@ -6,10 +6,10 @@ interface IWifiParams {
 }
 
 export const wifi = async (params: IWifiParams): Promise<any> => {
-    const {interaction, version} = params;
-    
-    await interaction.deferReply({ephemeral: false});
-    
+    const { interaction, version } = params;
+
+    await interaction.deferReply({ ephemeral: false });
+
     const wifiContent: InteractionEditReplyOptions = {
         embeds: [{
             color: 0x42fcff,
@@ -32,7 +32,7 @@ export const wifi = async (params: IWifiParams): Promise<any> => {
             },
         }],
     };
-    
+
     return await interaction.editReply(wifiContent).catch(() => {
     });
 };
