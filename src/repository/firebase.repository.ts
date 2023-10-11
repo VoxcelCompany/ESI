@@ -10,11 +10,12 @@ class FirebaseRepository {
 
     constructor() {
         this.credentials = JSON.parse(decrypt(process.env.GOOGLE_CREDENTIALS_CONTENT).split("\n").join("\\n"));
-        this.database = getFirestore();
 
         initializeApp({
             credential: cert(this.credentials),
         });
+
+        this.database = getFirestore();
     }
 
     /**
