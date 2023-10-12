@@ -13,8 +13,8 @@ export const wifi = async (params: IWifiParams): Promise<any> => {
     const wifiContent: InteractionEditReplyOptions = {
         embeds: [{
             color: 0x42fcff,
-            title: `📶 Wifi Enigma`,
-            description: `Informations concernant la connexion et les identifiants wifi d'Enigma\n­`,
+            title: `📶 Wifi ENIGMA`,
+            description: `Informations concernant la connexion et les identifiants wifi d'ENIGMA\n`,
             fields: [
                 {
                     name: '🔰 Nom de la connexion',

@@ -40,7 +40,7 @@ client.on(Events.ClientReady, () => {
 	client.user.setStatus(process.env.BOT_STATUS as PresenceStatusData);
 
 	client.user.setActivity({
-		name: "Enigma",
+		name: "ENIGMA",
 		type: ActivityType.Competing
 	});
 

@@ -46,7 +46,7 @@ export const aide = async (params: IAideParams): Promise<void> => {
                 },
                 {
                     "name": `/wifi`,
-                    "value": `Permet de récupérer les informations à propos de la connexion internet d'Enigma.`,
+                    "value": `Permet de récupérer les informations à propos de la connexion internet d'ENIGMA.`,
                 },
                 {
                     "name": `/info`,
