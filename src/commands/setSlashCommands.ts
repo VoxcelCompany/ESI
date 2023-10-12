@@ -1,6 +1,6 @@
 import { Client, SlashCommandBuilder } from 'discord.js';
 
-export const setAllCommands = async (guildId: string, client: Client) => {
+export const setSlashCommands = async (guildId: string, client: Client) => {
     const guild = client.guilds.cache.get(guildId);
 
     if (!guild) return;
@@ -74,7 +74,7 @@ export const setAllCommands = async (guildId: string, client: Client) => {
 
     commandsToCreate.push(new SlashCommandBuilder()
         .setName('wifi')
-        .setDescription('Affiche diverses informations concernant la connexion wifi d\'Enigma'),
+        .setDescription('Affiche diverses informations concernant la connexion wifi d\'ENIGMA'),
     );
 
     if (guildId != process.env.GLD_ADMIN) { // PUBLIC COMMANDS
