@@ -4,7 +4,7 @@ import EdtDb from "../models/EdtDb";
 import EdtFile from "../models/EdtFile";
 import EnigmaRepository from "../repository/enigma.repository";
 import firebaseRepository from "../repository/firebase.repository";
-import { getMomentDate } from "../utils/dates";
+import {getMomentDate} from "../utils/dates";
 import Cursus from "../utils/enum/Cursus";
 
 class Enigma {
@@ -96,7 +96,7 @@ class Enigma {
                 datas: edtDatas,
             };
 
-            await this.saveEdtToDb(edtDb, cur);
+            await firebaseRepository.createData("edt", cur, edtDb);
         }
 
         return edtDatas;
@@ -113,10 +113,6 @@ class Enigma {
             default:
                 return false;
         }
-    };
-
-    private async saveEdtToDb(datas: EdtDb, cur: Cursus): Promise<void> {
-        await firebaseRepository.createData("edt", cur, datas);
     };
 
     public async getEdtFromDb(cur: Cursus): Promise<EdtDb> {
