@@ -42,9 +42,11 @@ class Enigma {
             case Cursus.RETAIL:
                 fileId = process.env.MS_EXCEL_RETAIL_ID;
                 break;
-            default:
+            case Cursus.CYBER:
                 fileId = process.env.MS_EXCEL_CYBER_ID;
                 break;
+            default:
+                throw new Error("Invalid cursus");
         }
 
         const fileContent: ArrayBuffer = await EnigmaRepository.getFileContent(fileId);
