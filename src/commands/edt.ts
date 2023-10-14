@@ -21,7 +21,7 @@ const getCustomizedDate = (semaine: number = 0): Moment => {
 }
 
 export const edt = async (params: IAideParams) => {
-    const { num, interaction, type } = params;
+    let { num, interaction, type } = params;
 
     if (type == CommandType.BUTTON) {
         await interaction.deferUpdate();
@@ -74,10 +74,10 @@ export const edt = async (params: IAideParams) => {
                 edtDatas.push({
                     day: displayWeekdays[courseDate.isoWeekday() - 1] ?? "Jour innatendu",
                     daynb: courseDate.isoWeekday(),
-                    morningcourse: course.morning !== false ? course.morning.split("(")[0] : false,
-                    afternooncourse: course.afternoon !== false ? course.afternoon.split("(")[0] : false,
-                    morningteacher: course.morning !== false ? course.morning.split("(")?.[1]?.replace(")", "") : false,
-                    afternoonteacher: course.afternoon !== false ? course.afternoon.split("(")?.[1]?.replace(")", "") : false,
+                    morningcourse: course.morning !== false ? course.morning.split(/ ?\(/)[0] : false,
+                    afternooncourse: course.afternoon !== false ? course.afternoon.split(/ ?\(/)[0] : false,
+                    morningteacher: course.morning !== false ? course.morning.split(/ ?\(/)?.[1]?.replace(")", "") : false,
+                    afternoonteacher: course.afternoon !== false ? course.afternoon.split(/ ?\(/)?.[1]?.replace(")", "") : false,
                 });
             }
         }
@@ -114,27 +114,38 @@ export const edt = async (params: IAideParams) => {
                     const morningCourse = e.morningcourse.toLowerCase().replace(/ /g, "");
                     const afternoonCourse = e.afternooncourse.toLowerCase().replace(/ /g, "");
 
-                    if (morningCourse.startsWith(afternoonCourse) || afternoonCourse.startsWith(morningCourse)) {
+                    if (morningCourse.startsWith(afternoonCourse) || afternoonCourse.startsWith(morningCourse)) { // if same course
                         if (!e.morningteacher && !e.afternoonteacher) {
-                            field.value = `${e.morningcourse ? `**${e.morningcourse}**` : "Aucun cours"}`;
+                            field.value = `${`**${e.morningcourse}**`}`;
                         } else if (e.morningteacher == e.afternoonteacher) {
-                            field.value = `${e.morningcourse ? `**${e.morningcourse}**\n🧑‍🏫 *${e.morningteacher}*` : "Aucun cours"}`;
+                            field.value = `${`**${e.morningcourse}**\n🧑‍🏫 *${e.morningteacher}*`}`;
                         } else {
-                            field.value = `${e.morningcourse ? `**${e.morningcourse}**\n🧑‍🏫 *${e.morningteacher} / ${e.afternoonteacher}*` : "Aucun cours"}`;
+                            field.value = `${`**${e.morningcourse}**\n🧑‍🏫 *${e.morningteacher} / ${e.afternoonteacher}*`}`;
+                        }
+                    } else { // if different courses
+                        if (!e.morningteacher && !e.afternoonteacher) {
+                            field.value = `${`Matin : **${e.morningcourse}**\nAprès-midi : **${e.afternooncourse}**`}`;
+                        } else if (e.morningteacher == e.afternoonteacher) {
+                            field.value = `${`Matin : **${e.morningcourse}**\nAprès-midi : **${e.afternooncourse}**\n🧑‍🏫 *${e.morningteacher}*`}`;
+                        } else if (!!e.morningteacher && !!e.afternoonteacher) {
+                            field.value = `${`Matin : **${e.morningcourse}**\nAprès-midi : **${e.afternooncourse}**\n🧑‍🏫 *${e.morningteacher} / ${e.afternoonteacher}*`}`;
+                        } else if (!!e.morningteacher) {
+                            field.value = `${`Matin : **${e.morningcourse}**\nAprès-midi : **${e.afternooncourse}**\n🧑‍🏫 *${e.morningteacher} (matin)*`}`;
+                        } else if (!!e.afternoonteacher) {
+                            field.value = `${`Matin : **${e.morningcourse}**\nAprès-midi : **${e.afternooncourse}**\n🧑‍🏫 *${e.afternoonteacher} (après-midi)*`}`;
                         }
                     }
                 } else if (!!e.morningcourse) { // if only morning course
                     if (!e.morningteacher) {
-                        field.value = `${e.morningcourse ? `Matin : **${e.morningcourse}**` : "Aucun cours"}`;
+                        field.value = `${`Matin : **${e.morningcourse}**`}`;
                     } else {
-                        console.log(e.morningcourse, e.morningteacher);
-                        field.value = `${e.morningcourse ? `Matin : **${e.morningcourse}**\n🧑‍🏫 *${e.morningteacher}*` : "Aucun cours"}`;
+                        field.value = `${`Matin : **${e.morningcourse}**\n🧑‍🏫 *${e.morningteacher}*`}`;
                     }
                 } else { // if only afternoon course
                     if (!e.afternoonteacher) {
-                        field.value = `${e.afternooncourse ? `Après-midi : **${e.afternooncourse}**` : "Aucun cours"}`;
+                        field.value = `${`Après-midi : **${e.afternooncourse}**`}`;
                     } else {
-                        field.value = `${e.afternooncourse ? `Après-midi : **${e.afternooncourse}**\n🧑‍🏫 *${e.afternoonteacher}*` : "Aucun cours"}`;
+                        field.value = `${`Après-midi : **${e.afternooncourse}**\n🧑‍🏫 *${e.afternoonteacher}*`}`;
                     }
                 }
 
@@ -149,6 +160,7 @@ export const edt = async (params: IAideParams) => {
 
     const buttonsRow = new ActionRowBuilder().addComponents(
         new ButtonBuilder().setCustomId(`EDT${parseInt(num) - 1}`).setLabel("❰❰ ­ Précédent").setStyle(ButtonStyle.Success).setDisabled(parseInt(num) <= 1),
+        new ButtonBuilder().setLabel("Détails").setStyle(ButtonStyle.Link).setURL(userCursus == Cursus.CYBER ? "https://enigmaschoolintra.sharepoint.com/:x:/r/sites/Organisation23_24/Documents%20partages/General/E4%202324%20Cyber.xlsx?d=wf21d48c0c9b3443abfe53d968ce58357&csf=1&web=1&e=G3Fc7m" : "https://enigmaschoolintra.sharepoint.com/:x:/r/sites/Organisation23_24/Documents%20partages/General/E4%202324%20Retail.xlsx?d=w2c56aa9e6d9049e3884418b1a70de3fb&csf=1&web=1&e=jqtjXd"),
         new ButtonBuilder().setCustomId(`EDT${parseInt(num) + 1}`).setLabel("Suivant ­ ❱❱").setStyle(ButtonStyle.Success).setDisabled(parseInt(num) >= 60),
     );
     messageContent["components"] = [buttonsRow];
