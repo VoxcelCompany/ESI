@@ -20,7 +20,7 @@ const getCustomizedDate = (semaine: number = 0): Moment => {
     return date.isoWeekday(1);
 }
 
-export const edt = async (params: IAideParams): Promise<any> => {
+export const edt = async (params: IAideParams): Promise<void> => {
     const { num, interaction, type } = params;
 
     if (type == CommandType.BUTTON) {
@@ -41,9 +41,10 @@ export const edt = async (params: IAideParams): Promise<any> => {
             userCursus = Cursus.RETAIL;
             break;
         default:
-            return await interaction.editReply({
+            await interaction.editReply({
                 content: `Veuillez vous attribuer le rôle <@&${process.env.ROLE_CYBER}> ou <@&${process.env.ROLE_RETAIL}> pour utiliser cette commande.\nVous pouvez aussi utiliser \`/edt <num> <type>\` pour afficher l'emploi du temps d'une autre section.`,
             });
+            return;
     }
 
     const weekDate = getCustomizedDate(parseInt(num) - 1);
@@ -174,5 +175,6 @@ export const edt = async (params: IAideParams): Promise<any> => {
     // Send the message
     await interaction.editReply(messageContent);
 
-    return (await interaction.fetchReply()).react(process.env.EMOJI_MERCI);
+    // Add reactions to the message
+    (await interaction.fetchReply()).react(process.env.EMOJI_MERCI);
 }

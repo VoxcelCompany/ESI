@@ -9,7 +9,7 @@ interface IInfoParams {
     botUptime: Date;
 }
 
-export const info = async (params: IInfoParams): Promise<any> => {
+export const info = async (params: IInfoParams): Promise<void> => {
     const { interaction, time, botUptime, version } = params;
 
     const { discordPing, botPing, uptime } = {
@@ -24,7 +24,7 @@ export const info = async (params: IInfoParams): Promise<any> => {
     await firebaseRepository.getAllData('edt');
     const dbDate = `${new Date().getTime() - firstDbDate.getTime()}ms`;
 
-    return await interaction.editReply({
+    await interaction.editReply({
         embeds: [{
             color: 0x42fcff,
             title: `ℹ️ Informations`,

@@ -5,7 +5,7 @@ interface IWifiParams {
     version: string;
 }
 
-export const wifi = async (params: IWifiParams): Promise<any> => {
+export const wifi = async (params: IWifiParams): Promise<void> => {
     const { interaction, version } = params;
 
     await interaction.deferReply({ ephemeral: false });
@@ -33,6 +33,5 @@ export const wifi = async (params: IWifiParams): Promise<any> => {
         }],
     };
 
-    return await interaction.editReply(wifiContent).catch(() => {
-    });
-};
+    await interaction.editReply(wifiContent);
+}
