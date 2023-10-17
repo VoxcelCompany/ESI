@@ -5,8 +5,6 @@ Do not hesitate to contact me if you want to use the code of the robot to do som
 
 Nekewo on Discord / Guilded
 
-![esi](./images/esibot.png)
-
 ---------
 
 
