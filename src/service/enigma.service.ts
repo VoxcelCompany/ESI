@@ -7,7 +7,7 @@ import firebaseRepository from "../repository/firebase.repository";
 import {getMomentDate} from "../utils/dates";
 import Cursus from "../utils/enum/Cursus";
 
-class Enigma {
+class EnigmaService {
     public async getEdtFileDataFromApi(cursus: Cursus): Promise<EdtFile> {
         let fileId: string;
         switch (cursus) {
@@ -120,4 +120,4 @@ class Enigma {
     }
 }
 
-export default new Enigma();
+export default new EnigmaService();
