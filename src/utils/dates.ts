@@ -1,5 +1,6 @@
-import moment from "moment-timezone";
+import moment, {Moment} from "moment-timezone";
 
-export const getMomentDate = (date?: string | Date, format?: string) => {
+export const getMomentDate = (date?: string | Date, format?: string): Moment => {
+    moment.locale('fr');
     return moment(date, format).tz("Europe/Paris");
 };
