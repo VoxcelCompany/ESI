@@ -3,20 +3,28 @@ import * as jsdom from "jsdom";
 import Menu, {getDefaultMenu} from "../models/Menu";
 import {Moment} from "moment-timezone";
 import {getMomentDate} from "../utils/dates";
+import {capitalize} from "../utils/stringManager";
 
 class MenuService {
-    private crousMenus: Array<Menu>;
+    private crousMenus: Array<Menu> = [];
 
     constructor() {
-        setInterval(
+        this.generateCrousMenus().then(
+            () => setInterval(
             this.generateCrousMenus,
-            7200000,
+                18000000,
+            )
         );
     }
 
+    public async getDays(format: string = "dddd D MMMM"): Promise<Array<string>> {
+        if (this.crousMenus.length === 0) await this.generateCrousMenus();
+        return this.crousMenus.map((menu) => capitalize(menu.date.format(format)));
+    }
+
     public async getDayMenu(date: Moment): Promise<Menu> {
-        if (!this.crousMenus) await this.generateCrousMenus();
-        if (!this.crousMenus) return getDefaultMenu(date);
+        if (this.crousMenus.length === 0) await this.generateCrousMenus();
+        if (this.crousMenus.length === 0) return getDefaultMenu(date);
 
         const dayMenu: Menu = this.crousMenus.find((menu) => menu.date.isSame(date, 'day'));
 
