@@ -48,8 +48,10 @@ client.on(Events.ClientReady, () => {
 	// edtCheck(client, min); // min = 5, check the edt status every 5 minutes
 
 	// TODO For development state, remove those lines
-	// setAllCommands(process.env.GLD_ENIGMA, client); // enigma
-	// setAllCommands(process.env.GLD_ADMIN, client); // private server
+	setSlashCommands(
+		process.env.NODE_ENV === 'development' ? process.env.GLD_ADMIN : process.env.GLD_ENIGMA,
+		client
+	);
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
