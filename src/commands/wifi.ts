@@ -5,7 +5,7 @@ interface IWifiParams {
     version: string;
 }
 
-export const wifi = async (params: IWifiParams): Promise<any> => {
+export const wifi = async (params: IWifiParams): Promise<void> => {
     const { interaction, version } = params;
 
     await interaction.deferReply({ ephemeral: false });
@@ -14,7 +14,7 @@ export const wifi = async (params: IWifiParams): Promise<any> => {
         embeds: [{
             color: 0x42fcff,
             title: `📶 Wifi ENIGMA`,
-            description: `Informations concernant la connexion et les identifiants wifi d'ENIGMA\n`,
+            description: `Informations concernant la connexion et les identifiants wifi d'ENIGMA\n­`,
             fields: [
                 {
                     name: '🔰 Nom de la connexion',
@@ -33,6 +33,5 @@ export const wifi = async (params: IWifiParams): Promise<any> => {
         }],
     };
 
-    return await interaction.editReply(wifiContent).catch(() => {
-    });
-};
+    await interaction.editReply(wifiContent);
+}
