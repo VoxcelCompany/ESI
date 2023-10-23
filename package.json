@@ -1,7 +1,7 @@
 {
-  "name": "bie",
+  "name": "esi",
   "version": "1.0.0",
-  "description": "Bie Bot made by Nekewo",
+  "description": "Gunther Bot",
   "main": "main.js",
   "scripts": {
     "start": "tsc && node dist/main.js",
@@ -9,17 +9,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JulesSorensen/bie.git"
+    "url": "git+https://github.com/JulesSorensen/esi.git"
   },
   "keywords": [
-    "bie"
+    "esi"
   ],
   "author": "Nekewo",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/JulesSorensen/BIE/issues"
+    "url": "https://github.com/JulesSorensen/ESI/issues"
   },
-  "homepage": "https://github.com/JulesSorensen/BIE#readme",
+  "homepage": "https://github.com/JulesSorensen/ESI#readme",
   "dependencies": {
     "axios": "^0.25.0",
     "crypto-js": "^4.1.1",
