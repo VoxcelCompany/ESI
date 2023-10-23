@@ -1,26 +1,17 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, CacheType, GuildMember, ModalSubmitInteraction } from 'discord.js';
-import { Moment } from 'moment';
 import enigmaService from '../service/enigma.service';
-import { getMomentDate } from '../utils/dates';
+import { getCustomizedDate, getMomentDate } from '../utils/dates';
 import CommandType from '../utils/enum/CommandType';
 import Cursus from '../utils/enum/Cursus';
 import { capitalize } from '../utils/stringManager';
 
-interface IAideParams {
+interface EdtParams {
     num: string;
     interaction: ModalSubmitInteraction<CacheType>;
     type: CommandType;
 }
 
-const getCustomizedDate = (semaine: number = 0): Moment => {
-    const date = getMomentDate().set({ hour: 0, minute: 0, second: 0, millisecond: 0 }).add(semaine, "weeks");
-
-    if (date.isoWeekday() >= 6) date.add(1, 'weeks');
-
-    return date.isoWeekday(1);
-}
-
-export const edt = async (params: IAideParams): Promise<void> => {
+export const edt = async (params: EdtParams): Promise<void> => {
     const { num, interaction, type } = params;
 
     if (type == CommandType.BUTTON) {
