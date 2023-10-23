@@ -14,8 +14,6 @@ import { capitalize } from "../utils/stringManager";
 import DiscordFormatterService from "./discordFormatter.service";
 
 class EnigmaService {
-    lastSavedUpdateDate: Moment;
-
     private async getEdtFileDataFromApi(cursus: Cursus): Promise<EdtFile> {
         let fileId: string;
         switch (cursus) {
