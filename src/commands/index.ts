@@ -86,4 +86,10 @@ export const messageReceived = async (message: Message, client: Client): Promise
                 return;
         }
     }
+
+    switch (true) {
+        case /bien du plaisir/i.test(message.content):
+            await message.channel.send("Dixit Thietty !");
+            return;
+    }
 };
