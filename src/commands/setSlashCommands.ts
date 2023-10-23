@@ -31,7 +31,20 @@ export const setSlashCommands = async (guildId: string, client: Client) => {
                     name: 'Dans deux semaines',
                     value: '3',
                 }),
-        ),
+        )
+        .addStringOption(option =>
+            option.setName('type')
+                .setDescription('Type d\'emploi du temps')
+                .setRequired(false)
+                .addChoices({
+                    name: 'Cyber',
+                    value: '1',
+                })
+                .addChoices({
+                    name: 'Retail',
+                    value: '2',
+                }),
+        )
     );
 
     // commandsToCreate.push(new SlashCommandBuilder()

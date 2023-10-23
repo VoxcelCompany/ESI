@@ -1,5 +1,6 @@
 import { APIEmbedField } from "discord.js";
 import { EdtChanges } from "../models/EdtChanges";
+import { EdtDataCmd } from "../models/EdtDataCmd";
 import { MONTHS, WEEK_DAYS } from "../utils/constants/Dates";
 
 class DiscordFormatterService {
@@ -49,6 +50,69 @@ class DiscordFormatterService {
         }
 
         return fields;
+    }
+
+    public formatEdtCommandFields(edtDatas: EdtDataCmd[]): {
+        name: string;
+        value: string;
+    }[] {
+        const messageFields = edtDatas.map((e) => {
+            const field = {
+                name: `${e.day}`,
+                value: "",
+            };
+
+            if (e.morningcourse === false && e.afternooncourse === false) {
+                // if no courses
+                field.value = "*Entreprise*";
+            } else if (!!e.morningcourse && !!e.afternooncourse) {
+                // if courses morning and afternoon
+                const morningCourse = e.morningcourse.toLowerCase().replace(/ /g, "");
+                const afternoonCourse = e.afternooncourse.toLowerCase().replace(/ /g, "");
+
+                if (morningCourse.startsWith(afternoonCourse) || afternoonCourse.startsWith(morningCourse)) {
+                    // if same course
+                    if (!e.morningteacher && !e.afternoonteacher) {
+                        field.value = `**${e.morningcourse}**`;
+                    } else if (e.morningteacher == e.afternoonteacher) {
+                        field.value = `**${e.morningcourse}**\n🧑‍🏫 *${e.morningteacher}*`;
+                    } else {
+                        field.value = `**${e.morningcourse}**\n🧑‍🏫 *${e.morningteacher} / ${e.afternoonteacher}*`;
+                    }
+                } else {
+                    // if different courses
+                    if (!e.morningteacher && !e.afternoonteacher) {
+                        field.value = `Matin : **${e.morningcourse}**\nAprès-midi : **${e.afternooncourse}**`;
+                    } else if (e.morningteacher == e.afternoonteacher) {
+                        field.value = `Matin : **${e.morningcourse}**\nAprès-midi : **${e.afternooncourse}**\n🧑‍🏫 *${e.morningteacher}*`;
+                    } else if (!!e.morningteacher && !!e.afternoonteacher) {
+                        field.value = `Matin : **${e.morningcourse}**\nAprès-midi : **${e.afternooncourse}**\n🧑‍🏫 *${e.morningteacher} / ${e.afternoonteacher}*`;
+                    } else if (!!e.morningteacher) {
+                        field.value = `Matin : **${e.morningcourse}**\nAprès-midi : **${e.afternooncourse}**\n🧑‍🏫 *${e.morningteacher} (matin)*`;
+                    } else if (!!e.afternoonteacher) {
+                        field.value = `Matin : **${e.morningcourse}**\nAprès-midi : **${e.afternooncourse}**\n🧑‍🏫 *${e.afternoonteacher} (après-midi)*`;
+                    }
+                }
+            } else if (!!e.morningcourse) {
+                // if only morning course
+                if (!e.morningteacher) {
+                    field.value = `Matin : **${e.morningcourse}**`;
+                } else {
+                    field.value = `Matin : **${e.morningcourse}**\n🧑‍🏫 *${e.morningteacher}*`;
+                }
+            } else {
+                // if only afternoon course
+                if (!e.afternoonteacher) {
+                    field.value = `Après-midi : **${e.afternooncourse}**`;
+                } else {
+                    field.value = `Après-midi : **${e.afternooncourse}**\n🧑‍🏫 *${e.afternoonteacher}*`;
+                }
+            }
+
+            return field;
+        });
+
+        return messageFields;
     }
 }
 

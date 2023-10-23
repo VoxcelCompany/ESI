@@ -22,10 +22,16 @@ export default async (interaction: any | Interaction<CacheType> | ModalSubmitInt
                 await wifi({ interaction: interaction, version: version });
                 return;
             case /^edt$/.test(commandName):
-                await edt({ num: interaction.options.get('semaine').value, interaction: interaction, type: commandType });
+                await edt({
+                    weekNum: interaction.options.get('semaine').value,
+                    typeNum: interaction.options.get('type')?.value,
+                    interaction: interaction,
+                    type: commandType,
+                    client,
+                });
                 return;
             case /^edt[0-9]+$/.test(commandName):
-                await edt({ num: commandName.replace('edt', ''), interaction: interaction, type: commandType });
+                await edt({ weekNum: commandName.replace('edt', ''), interaction: interaction, type: commandType, client });
                 return;
             // case /stats/.test(commandName):
             //     if (interaction.options?._subcommand == "devoirs") {
