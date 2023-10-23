@@ -130,7 +130,10 @@ class EnigmaService {
         const edtFromDb: EdtDb = (await firebaseRepository.getAllData("edt"))[cursus];
         const edtInfo = await this.getEdtFileDataFromApi(cursus);
 
-        if (!edtFromDb.lastModifiedDateTime) return { isDiff: false };
+        if (!edtFromDb || !edtFromDb.lastModifiedDateTime) {
+            this.getEdtFromApi(cursus, true);
+            return { isDiff: false };
+        }
 
         const newDate = getMomentDate(edtInfo.lastModifiedDateTime);
         const oldDate = getMomentDate(edtFromDb.lastModifiedDateTime);
