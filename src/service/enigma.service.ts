@@ -11,7 +11,7 @@ import { CURSUS } from "../utils/constants/Cursus";
 import { getMomentDate } from "../utils/dates";
 import Cursus from "../utils/enum/Cursus";
 import { capitalize } from "../utils/stringManager";
-import discordService from "./discord.service";
+import discordService from "./discordFormatter.service";
 
 class EnigmaService {
     lastSavedUpdateDate: Moment;

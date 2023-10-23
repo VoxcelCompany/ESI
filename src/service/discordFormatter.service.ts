@@ -2,7 +2,7 @@ import { APIEmbedField } from "discord.js";
 import { EdtChanges } from "../models/EdtChanges";
 import { MONTHS, WEEK_DAYS } from "../utils/constants/Dates";
 
-class DiscordService {
+class DiscordFormatterService {
     public formatUpdateEdtFields(edtChanges: EdtChanges): APIEmbedField[] {
         const fields: APIEmbedField[] = [];
 
@@ -52,4 +52,4 @@ class DiscordService {
     }
 }
 
-export default new DiscordService();
+export default new DiscordFormatterService();
