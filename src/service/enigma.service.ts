@@ -14,7 +14,7 @@ import { capitalize } from "../utils/stringManager";
 import DiscordFormatterService from "./discordFormatter.service";
 
 class EnigmaService {
-    private async getEdtFileDataFromApi(cursus: Cursus): Promise<EdtFile> {
+    public async getEdtFileDataFromApi(cursus: Cursus): Promise<EdtFile> {
         let fileId: string;
         switch (cursus) {
             case Cursus.RETAIL:

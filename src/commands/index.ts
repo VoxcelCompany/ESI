@@ -16,7 +16,7 @@ export default async (interaction: any | Interaction<CacheType> | ModalSubmitInt
                 await aide({ interaction: interaction, version: version });
                 return;
             case /^info$/.test(commandName):
-                await info({ interaction: interaction, version: version, time: callDate, botUptime: uptime });
+                await info({ interaction: interaction, version: version, botUptime: uptime });
                 return;
             case /^wifi$/.test(commandName):
                 await wifi({ interaction: interaction, version: version });

@@ -19,7 +19,7 @@ export const aide = async (params: IAideParams): Promise<void> => {
                 thumbnail: {
                     url: "https://64.media.tumblr.com/0203de9c403a0da0ef7bf61e435cee0c/tumblr_mm7gdb53IN1re7l7wo1_r1_250.gif",
                 },
-                color: 0x417e4c,
+                color: 0xff0000,
                 fields: [
                     {
                         name: `/edt {semaine} (section)`,
