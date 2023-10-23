@@ -1,12 +1,12 @@
 import { Client } from "discord.js";
 import { Cron } from "../models/Cron";
-import enigmaService from "./enigma.service";
+import EnigmaService from "./enigma.service";
 
 class SchedulerService {
     private client: Client;
     private crons: Cron[] = [
         {
-            callback: enigmaService.checkEdtUpdate,
+            callback: () => EnigmaService.checkEdtUpdate(this.client),
             timer: 1800000,
         },
     ];
@@ -21,10 +21,10 @@ class SchedulerService {
 
     private launchCrons(): void {
         this.crons.forEach((cron) => {
-            cron.callback(this.client);
+            cron.callback();
 
             setInterval(() => {
-                cron.callback(this.client);
+                cron.callback();
             }, cron.timer);
         });
     }
