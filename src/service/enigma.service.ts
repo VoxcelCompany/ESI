@@ -44,9 +44,9 @@ class EnigmaService {
         };
     }
 
-    private async getEdtFromApi(cur: Cursus, saveToDb = false): Promise<Edt> {
+    private async getEdtFromApi(cursus: Cursus, saveToDb = false): Promise<Edt> {
         let fileId: string;
-        switch (cur) {
+        switch (cursus) {
             case Cursus.RETAIL:
                 fileId = process.env.MS_EXCEL_RETAIL_ID;
                 break;
@@ -102,14 +102,14 @@ class EnigmaService {
         });
 
         if (saveToDb) {
-            const infos = await this.getEdtFileDataFromApi(cur);
+            const infos = await this.getEdtFileDataFromApi(cursus);
 
             const edtDb: EdtDb = {
                 ...infos,
                 datas: edtDatas,
             };
 
-            await firebaseRepository.createData("edt", cur, edtDb);
+            await firebaseRepository.createData("edt", cursus, edtDb);
         }
 
         return edtDatas;
@@ -128,131 +128,126 @@ class EnigmaService {
         }
     }
 
-    public async getEdtUpdate(cur: Cursus): Promise<EdtDiff> {
-        const edtFromDb: EdtDb = (await firebaseRepository.getAllData("edt"))[cur];
-        const edtInfo = await this.getEdtFileDataFromApi(cur);
+    public async getEdtUpdate(cursus: Cursus): Promise<EdtDiff> {
+        const edtFromDb: EdtDb = (await firebaseRepository.getAllData("edt"))[cursus];
+        const edtInfo = await this.getEdtFileDataFromApi(cursus);
 
         if (!edtFromDb.lastModifiedDateTime) return { isDiff: false };
 
         const newDate = getMomentDate(edtInfo.lastModifiedDateTime);
         const oldDate = getMomentDate(edtFromDb.lastModifiedDateTime);
 
-        if (newDate.isAfter(oldDate)) {
-            const newEdt = await this.getEdtFromApi(cur, true);
-            const edtChangesData: EdtChanges = {};
-            const today = getMomentDate(new Date()).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+        if (!newDate.isAfter(oldDate)) return { isDiff: false };
 
-            for (const date in newEdt) {
-                if (getMomentDate(date, "YYYY-MM-DD").isBefore(today)) continue;
+        const newEdt = await this.getEdtFromApi(cursus, true);
+        const edtChangesData: EdtChanges = {};
+        const today = getMomentDate(new Date()).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
 
-                const isSameMorningCourse = newEdt[date].morning === edtFromDb.datas[date].morning;
-                const isSameAfternoonCourse = newEdt[date].afternoon === edtFromDb.datas[date].afternoon;
-                if (!isSameMorningCourse || !isSameAfternoonCourse) {
-                    if (!isSameMorningCourse && !isSameAfternoonCourse) {
-                        edtChangesData[date] = {
-                            oldMorning: edtFromDb.datas[date].morning,
-                            oldAfternoon: edtFromDb.datas[date].afternoon,
-                            newMorning: newEdt[date].morning,
-                            newAfternoon: newEdt[date].afternoon,
-                        };
-                    } else if (!isSameMorningCourse) {
-                        edtChangesData[date] = {
-                            oldMorning: edtFromDb.datas[date].morning,
-                            oldAfternoon: edtFromDb.datas[date].afternoon,
-                            newMorning: newEdt[date].morning,
-                            newAfternoon: false,
-                        };
-                    } else {
-                        edtChangesData[date] = {
-                            oldMorning: edtFromDb.datas[date].morning,
-                            oldAfternoon: edtFromDb.datas[date].afternoon,
-                            newMorning: false,
-                            newAfternoon: newEdt[date].afternoon,
-                        };
-                    }
-                }
+        for (const date in newEdt) {
+            if (getMomentDate(date, "YYYY-MM-DD").isBefore(today)) continue;
+
+            const isSameMorningCourse = newEdt[date].morning === edtFromDb.datas[date].morning;
+            const isSameAfternoonCourse = newEdt[date].afternoon === edtFromDb.datas[date].afternoon;
+
+            if (isSameMorningCourse && isSameAfternoonCourse) continue;
+
+            if (!isSameMorningCourse && !isSameAfternoonCourse) {
+                edtChangesData[date] = {
+                    oldMorning: edtFromDb.datas[date].morning,
+                    oldAfternoon: edtFromDb.datas[date].afternoon,
+                    newMorning: newEdt[date].morning,
+                    newAfternoon: newEdt[date].afternoon,
+                };
+            } else if (!isSameMorningCourse) {
+                edtChangesData[date] = {
+                    oldMorning: edtFromDb.datas[date].morning,
+                    oldAfternoon: edtFromDb.datas[date].afternoon,
+                    newMorning: newEdt[date].morning,
+                    newAfternoon: false,
+                };
+            } else {
+                edtChangesData[date] = {
+                    oldMorning: edtFromDb.datas[date].morning,
+                    oldAfternoon: edtFromDb.datas[date].afternoon,
+                    newMorning: false,
+                    newAfternoon: newEdt[date].afternoon,
+                };
             }
-
-            return {
-                isDiff: true,
-                edtChanges: {
-                    authorName: edtInfo.lastModifiedBy.user.displayName,
-                    data: edtChangesData,
-                },
-            };
         }
 
         return {
-            isDiff: false,
+            isDiff: true,
+            edtChanges: {
+                authorName: edtInfo.lastModifiedBy.user.displayName,
+                data: edtChangesData,
+            },
         };
     }
 
     public checkEdtUpdate(client: Client): void {
-        allCursus.forEach(async (cur: Cursus) => {
-            const edtUpdate = await this.getEdtUpdate(cur);
+        allCursus.forEach(async (cursus: Cursus) => {
+            const edtUpdate = await this.getEdtUpdate(cursus);
 
-            if (edtUpdate.isDiff) {
-                const formatedFields = discordService.formatUpdateEdtFields(edtUpdate.edtChanges.data);
+            if (!edtUpdate.isDiff) return;
 
-                if (formatedFields.length === 0) return;
+            const formatedFields = discordService.formatUpdateEdtFields(edtUpdate.edtChanges.data);
 
-                let channelId = "";
-                switch (cur) {
-                    case Cursus.RETAIL:
-                        channelId = process.env.CHNL_RETAIL_ALERT;
-                        break;
-                    case Cursus.CYBER:
-                        channelId = process.env.CHNL_CYBER_ALERT;
-                        break;
-                    default:
-                        throw new Error("Invalid cursus");
-                }
-                const channel = client.channels.cache.get(channelId) as BaseGuildTextChannel;
+            if (formatedFields.length === 0) return;
 
-                const msg = await channel.send({
-                    content: `<a:bell:868901922483097661> <@&${process.env.ROLE_NOTIFIED}>`,
-                    embeds: [
-                        {
-                            title: `Changement${formatedFields.length > 1 ? "s" : ""} dans l'emploi du temps`,
-                            description: `${
-                                formatedFields.length > 1
-                                    ? "Plusieurs changements ont étés détectés"
-                                    : "Un changement a été détecté"
-                            } dans l'emploi du temps de la section ${capitalize(cur)} !\n\n`,
-                            color: 0x00ff00,
-                            fields: formatedFields,
-                            timestamp: new Date().toISOString(),
-                            footer: {
-                                text: `${
-                                    edtUpdate.edtChanges.authorName !== false
-                                        ? `${edtUpdate.edtChanges.authorName} - `
-                                        : ""
-                                }${cur}`,
-                            },
-                        },
-                    ],
-                });
-
-                const threadTitles = [
-                    `Ça bouge en ${capitalize(cur)} !`,
-                    `${edtUpdate.edtChanges.authorName} a encore fait des siennes...`,
-                    `Que se passe-t-il en ${capitalize(cur)} ?`,
-                    `Mais pourquoi ${edtUpdate.edtChanges.authorName} ??`,
-                    "PITIÉ",
-                ];
-                const threadTitle = threadTitles[Math.floor(Math.random() * threadTitles.length)];
-
-                // create thread with message
-                await msg.startThread({
-                    name: threadTitle,
-                    autoArchiveDuration: ThreadAutoArchiveDuration.OneDay,
-                });
+            let channelId = "";
+            switch (cursus) {
+                case Cursus.RETAIL:
+                    channelId = process.env.CHNL_RETAIL_ALERT;
+                    break;
+                case Cursus.CYBER:
+                    channelId = process.env.CHNL_CYBER_ALERT;
+                    break;
+                default:
+                    throw new Error("Invalid cursus");
             }
+            const channel = client.channels.cache.get(channelId) as BaseGuildTextChannel;
+
+            const msg = await channel.send({
+                content: `<a:bell:868901922483097661> <@&${process.env.ROLE_NOTIFIED}>`,
+                embeds: [
+                    {
+                        title: `Changement${formatedFields.length > 1 ? "s" : ""} dans l'emploi du temps`,
+                        description: `${
+                            formatedFields.length > 1
+                                ? "Plusieurs changements ont étés détectés"
+                                : "Un changement a été détecté"
+                        } dans l'emploi du temps de la section ${capitalize(cursus)} !\n\n`,
+                        color: 0x00ff00,
+                        fields: formatedFields,
+                        timestamp: new Date().toISOString(),
+                        footer: {
+                            text: `${
+                                edtUpdate.edtChanges.authorName !== false ? `${edtUpdate.edtChanges.authorName} - ` : ""
+                            }${cursus}`,
+                        },
+                    },
+                ],
+            });
+
+            const threadTitles = [
+                `Ça bouge en ${capitalize(cursus)} !`,
+                `${edtUpdate.edtChanges.authorName} a encore fait des siennes...`,
+                `Que se passe-t-il en ${capitalize(cursus)} ?`,
+                `Mais pourquoi ${edtUpdate.edtChanges.authorName} ??`,
+                "PITIÉ",
+            ];
+            const threadTitle = threadTitles[Math.floor(Math.random() * threadTitles.length)];
+
+            // create thread with message
+            await msg.startThread({
+                name: threadTitle,
+                autoArchiveDuration: ThreadAutoArchiveDuration.OneDay,
+            });
         });
     }
 
-    public async getEdtFromDb(cur: Cursus): Promise<EdtDb> {
-        return (await firebaseRepository.getAllData("edt"))[cur];
+    public async getEdtFromDb(cursus: Cursus): Promise<EdtDb> {
+        return (await firebaseRepository.getAllData("edt"))[cursus];
     }
 }
 

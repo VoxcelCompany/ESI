@@ -1,23 +1,8 @@
 import { APIEmbedField } from "discord.js";
 import { EdtChanges } from "../models/EdtChanges";
+import { displayMonths, displayWeekdays } from "../utils/constants/Dates";
 
 class DiscordService {
-    private displayWeekdays = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
-    private displayMonths = [
-        "Janvier",
-        "Février",
-        "Mars",
-        "Avril",
-        "Mai",
-        "Juin",
-        "Juillet",
-        "Aout",
-        "Septemebre",
-        "Octobre",
-        "Novembre",
-        "Décembre",
-    ];
-
     public formatUpdateEdtFields(edtChanges: EdtChanges): APIEmbedField[] {
         const fields: APIEmbedField[] = [];
 
@@ -38,13 +23,14 @@ class DiscordService {
             const oldAC = edtChanges[date].oldAfternoon;
 
             const dateMoment = new Date(date);
-            const dateDay = this.displayWeekdays[dateMoment.getDay() - 1];
+            const dateDay = displayWeekdays[dateMoment.getDay() - 1];
             const fieldTitle = `${dateDay} ${dateMoment.getDate()} ${
-                this.displayMonths[dateMoment.getMonth()]
+                displayMonths[dateMoment.getMonth()]
             } ${dateMoment.getFullYear()}`;
 
-            let fieldMessage = "";
             if (!newMC && !newAC) continue;
+
+            let fieldMessage = "";
             if (newMC) {
                 fieldMessage += `Matin : *${oldMC}* >> **${newMC}**`;
             }

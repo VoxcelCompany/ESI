@@ -1,42 +1,32 @@
 import { Client } from "discord.js";
+import { Cron } from "../models/Cron";
 import enigmaService from "./enigma.service";
 
 class SchedulerService {
     private client: Client;
+    private crons: Cron[] = [
+        {
+            callback: enigmaService.checkEdtUpdate,
+            timer: 1800000,
+        },
+    ];
 
     public setClient(client: Client): this {
         this.client = client;
 
-        this.launchHourlyCrons();
-        this.launchMinutelyCrons();
+        this.launchCrons();
 
         return this;
     }
 
-    private launchHourlyCrons(): void {
-        this.launchHourlyFunctions();
-        setInterval(() => {
-            this.launchHourlyFunctions();
-        }, 3600000);
-    }
+    private launchCrons(): void {
+        this.crons.forEach((cron) => {
+            cron.callback(this.client);
 
-    private launchMinutelyCrons(): void {
-        this.launchMinutelyFunctions();
-        setInterval(() => {
-            this.launchMinutelyFunctions();
-        }, 60000);
-    }
-
-    private launchHourlyFunctions(): void {
-        if (!this.client) return;
-
-        enigmaService.checkEdtUpdate(this.client);
-    }
-
-    private launchMinutelyFunctions(): void {
-        if (!this.client) return;
-
-        // TODO check date and send edt on sunday at 7pm
+            setInterval(() => {
+                cron.callback(this.client);
+            }, cron.timer);
+        });
     }
 }
 
