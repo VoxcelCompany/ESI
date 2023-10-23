@@ -235,6 +235,11 @@ class EnigmaService {
                 `Que se passe-t-il en ${capitalize(cursus)} ?`,
                 `Mais pourquoi ${edtUpdate.edtChanges.authorName} ??`,
                 "PITIÉ",
+                "Saperlipopette...",
+                "$%*µ£",
+                "Mais c'est pas possible !",
+                `Arrête ça ${edtUpdate.edtChanges.authorName}`,
+                `Ça vous apprendra les ${cursus.toLowerCase()}`,
             ];
             const threadTitle = threadTitles[Math.floor(Math.random() * threadTitles.length)];
 
