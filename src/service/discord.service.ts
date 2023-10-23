@@ -1,6 +1,6 @@
 import { APIEmbedField } from "discord.js";
 import { EdtChanges } from "../models/EdtChanges";
-import { displayMonths, displayWeekdays } from "../utils/constants/Dates";
+import { MONTHS, WEEK_DAYS } from "../utils/constants/Dates";
 
 class DiscordService {
     public formatUpdateEdtFields(edtChanges: EdtChanges): APIEmbedField[] {
@@ -23,9 +23,9 @@ class DiscordService {
             const oldAC = edtChanges[date].oldAfternoon;
 
             const dateMoment = new Date(date);
-            const dateDay = displayWeekdays[dateMoment.getDay() - 1];
+            const dateDay = WEEK_DAYS[dateMoment.getDay() - 1];
             const fieldTitle = `${dateDay} ${dateMoment.getDate()} ${
-                displayMonths[dateMoment.getMonth()]
+                MONTHS[dateMoment.getMonth()]
             } ${dateMoment.getFullYear()}`;
 
             if (!newMC && !newAC) continue;

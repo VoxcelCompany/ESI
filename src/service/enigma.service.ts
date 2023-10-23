@@ -7,7 +7,7 @@ import EdtDb from "../models/EdtDb";
 import EdtFile from "../models/EdtFile";
 import EnigmaRepository from "../repository/enigma.repository";
 import firebaseRepository from "../repository/firebase.repository";
-import { allCursus } from "../utils/constants/Cursus";
+import { CURSUS } from "../utils/constants/Cursus";
 import { getMomentDate } from "../utils/dates";
 import Cursus from "../utils/enum/Cursus";
 import { capitalize } from "../utils/stringManager";
@@ -185,7 +185,7 @@ class EnigmaService {
     }
 
     public checkEdtUpdate(client: Client): void {
-        allCursus.forEach(async (cursus: Cursus) => {
+        CURSUS.forEach(async (cursus: Cursus) => {
             const edtUpdate = await this.getEdtUpdate(cursus);
 
             if (!edtUpdate.isDiff) return;

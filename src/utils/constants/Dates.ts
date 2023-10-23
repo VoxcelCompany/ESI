@@ -1,6 +1,6 @@
-export const displayWeekdays = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
+export const WEEK_DAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
 
-export const displayMonths = [
+export const MONTHS = [
     "Janvier",
     "Février",
     "Mars",
