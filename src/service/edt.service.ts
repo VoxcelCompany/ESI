@@ -1,15 +1,16 @@
 import { Client, GuildMember } from "discord.js";
 import { EdtDataCmd } from "../models/EdtDataCmd";
+import { WEEK_DAYS } from "../utils/constants/Dates";
 import { getCustomizedDate, getMomentDate } from "../utils/dates";
 import Cursus from "../utils/enum/Cursus";
 import enigmaService from "./enigma.service";
 
 class EdtService {
-    public recoverCursus(
+    public getUserCursus(
         user: GuildMember,
         typeNum?: number
     ): {
-        userCursus?: Cursus;
+        userCursus: Cursus;
         errorMessage?: string;
     } {
         if (!typeNum) {
@@ -22,7 +23,8 @@ class EdtService {
                     return { userCursus: Cursus.RETAIL };
                 default:
                     return {
-                        errorMessage: `Veuillez vous attribuer le rôle <@&${process.env.ROLE_CYBER}> ou <@&${process.env.ROLE_RETAIL}> pour utiliser cette commande.\nVous pouvez aussi utiliser \`/edt <weekNum> <type>\` pour afficher l'emploi du temps d'une autre section.`,
+                        userCursus: Cursus.CYBER,
+                        errorMessage: `Veuillez vous attribuer le rôle <@&${process.env.ROLE_CYBER}> ou <@&${process.env.ROLE_RETAIL}> pour utiliser cette commande.\nVous pouvez aussi utiliser \`/edt <weekNumber> <type>\` pour afficher l'emploi du temps d'une autre section.`,
                     };
             }
         } else {
@@ -33,17 +35,16 @@ class EdtService {
                     return { userCursus: Cursus.RETAIL };
                 default:
                     return {
+                        userCursus: Cursus.CYBER,
                         errorMessage: `Votre numéro de section est invalide.`,
                     };
             }
         }
     }
 
-    public async getEdtDatas(weekNum: number, userCursus: Cursus, client: Client): Promise<EdtDataCmd[]> {
-        const weekDate = getCustomizedDate(weekNum - 1);
+    public async getEdtDatas(weekNumber: number, userCursus: Cursus, client: Client): Promise<EdtDataCmd[]> {
+        const weekDate = getCustomizedDate(weekNumber - 1);
         const endWeekDate = weekDate.clone().add(5, "days");
-
-        const displayWeekdays = ["⎯ Lundi", "⎯ Mardi", "⎯ Mercredi", "⎯ Jeudi", "⎯ Vendredi"];
 
         const edtFromDb = (await enigmaService.getLatestEdt(userCursus, client)).datas;
         let edtDatas: {
@@ -65,10 +66,19 @@ class EdtService {
                 millisecond: 0,
             });
 
+            let displayWeek: string;
+            if (WEEK_DAYS[courseDate.isoWeekday() - 1] !== undefined) {
+                displayWeek = `⎯ ${WEEK_DAYS[courseDate.isoWeekday() - 1]}`;
+            } else {
+                displayWeek = `⎯ Jour inconu`;
+            }
+
+
+
             if (!course || !courseDate.isSameOrAfter(weekDate) || !courseDate.isBefore(endWeekDate)) continue;
 
             edtDatas.push({
-                day: displayWeekdays[courseDate.isoWeekday() - 1] ?? "Jour innatendu",
+                day: displayWeek,
                 daynb: courseDate.isoWeekday(),
                 morningcourse: course.morning !== false ? course.morning.split(/ ?\(/)[0] : false,
                 afternooncourse: course.afternoon !== false ? course.afternoon.split(/ ?\(/)[0] : false,

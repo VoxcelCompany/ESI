@@ -15,15 +15,15 @@ import Cursus from "../utils/enum/Cursus";
 import { capitalize } from "../utils/stringManager";
 
 interface EdtParams {
-    weekNum: string;
-    typeNum?: string;
+    weekNumber: string;
+    typeNumber?: string;
     interaction: ModalSubmitInteraction<CacheType>;
     type: CommandType;
     client: Client;
 }
 
 export const edt = async (params: EdtParams): Promise<void> => {
-    const { weekNum, typeNum, interaction, type, client } = params;
+    const { weekNumber, typeNumber, interaction, type, client } = params;
 
     if (type == CommandType.BUTTON) {
         await interaction.deferUpdate();
@@ -31,19 +31,19 @@ export const edt = async (params: EdtParams): Promise<void> => {
         await interaction.deferReply({ ephemeral: false });
     }
 
-    const userCursusRes = edtService.recoverCursus(interaction.member as GuildMember, +typeNum);
+    const userCursusRes = edtService.getUserCursus(interaction.member as GuildMember, +typeNumber);
 
     if (userCursusRes.errorMessage) {
         await interaction.editReply(userCursusRes.errorMessage);
         return;
     }
 
-    const userCursus = userCursusRes.userCursus as Cursus;
+    const userCursus = userCursusRes.userCursus;
 
-    const edtDatas = await edtService.getEdtDatas(+weekNum, userCursus, client);
+    const edtDatas = await edtService.getEdtDatas(+weekNumber, userCursus, client);
     const messageFields = discordFormatterService.formatEdtCommandFields(edtDatas);
 
-    const weekDate = getCustomizedDate(+weekNum - 1);
+    const weekDate = getCustomizedDate(+weekNumber - 1);
     const displayDate = weekDate.format("DD/MM/YYYY");
     const diplayWeek = {
         "1": "Cette semaine",
@@ -55,7 +55,7 @@ export const edt = async (params: EdtParams): Promise<void> => {
             {
                 color: 0xff0000,
                 title: `🗓️ **__${
-                    diplayWeek[weekNum] !== undefined ? diplayWeek[weekNum] : `Dans ${weekNum} semaines`
+                    diplayWeek[weekNumber] !== undefined ? diplayWeek[weekNumber] : `Dans ${weekNumber} semaines`
                 }__ ↔ ${displayDate}** `,
                 fields: messageFields,
                 footer: {
@@ -68,19 +68,19 @@ export const edt = async (params: EdtParams): Promise<void> => {
     // Add buttons to message
     const buttonsRow = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
-            .setCustomId(`EDT${parseInt(weekNum) - 1}`)
+            .setCustomId(`EDT${parseInt(weekNumber) - 1}`)
             .setLabel("❰❰ ­ Précédent")
             .setStyle(ButtonStyle.Danger)
-            .setDisabled(parseInt(weekNum) <= 1),
+            .setDisabled(parseInt(weekNumber) <= 1),
         new ButtonBuilder()
             .setLabel("Détails")
             .setStyle(ButtonStyle.Link)
             .setURL(userCursus == Cursus.CYBER ? process.env.LINK_CYBER : process.env.LINK_RETAIL),
         new ButtonBuilder()
-            .setCustomId(`EDT${parseInt(weekNum) + 1}`)
+            .setCustomId(`EDT${parseInt(weekNumber) + 1}`)
             .setLabel("Suivant ­ ❱❱")
             .setStyle(ButtonStyle.Danger)
-            .setDisabled(parseInt(weekNum) >= 60)
+            .setDisabled(parseInt(weekNumber) >= 60)
     );
     messageContent["components"] = [buttonsRow];
 

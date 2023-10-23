@@ -23,15 +23,15 @@ export default async (interaction: any | Interaction<CacheType> | ModalSubmitInt
                 return;
             case /^edt$/.test(commandName):
                 await edt({
-                    weekNum: interaction.options.get('semaine').value,
-                    typeNum: interaction.options.get('type')?.value,
+                    weekNumber: interaction.options.get('semaine').value,
+                    typeNumber: interaction.options.get('type')?.value,
                     interaction: interaction,
                     type: commandType,
                     client,
                 });
                 return;
             case /^edt[0-9]+$/.test(commandName):
-                await edt({ weekNum: commandName.replace('edt', ''), interaction: interaction, type: commandType, client });
+                await edt({ weekNumber: commandName.replace('edt', ''), interaction: interaction, type: commandType, client });
                 return;
             // case /stats/.test(commandName):
             //     if (interaction.options?._subcommand == "devoirs") {
