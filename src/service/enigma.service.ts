@@ -11,7 +11,7 @@ import { CURSUS } from "../utils/constants/Cursus";
 import { getMomentDate } from "../utils/dates";
 import Cursus from "../utils/enum/Cursus";
 import { capitalize } from "../utils/stringManager";
-import discordService from "./discordFormatter.service";
+import DiscordFormatterService from "./discordFormatter.service";
 
 class EnigmaService {
     lastSavedUpdateDate: Moment;
@@ -190,7 +190,7 @@ class EnigmaService {
 
             if (!edtUpdate.isDiff) return;
 
-            const formatedFields = discordService.formatUpdateEdtFields(edtUpdate.edtChanges.data);
+            const formatedFields = DiscordFormatterService.formatUpdateEdtFields(edtUpdate.edtChanges.data);
 
             if (formatedFields.length === 0) return;
 
