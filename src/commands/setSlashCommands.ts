@@ -1,4 +1,4 @@
-import { Client, SlashCommandBuilder } from 'discord.js';
+import { Client, SlashCommandBuilder } from "discord.js";
 
 export const setSlashCommands = async (guildId: string, client: Client) => {
     const guild = client.guilds.cache.get(guildId);
@@ -7,31 +7,34 @@ export const setSlashCommands = async (guildId: string, client: Client) => {
 
     const commandsToCreate: Array<SlashCommandBuilder | any> = [];
 
-    commandsToCreate.push(new SlashCommandBuilder()
-        .setName('aide')
-        .setDescription('Affiche la liste des commandes disponibles par le robot'),
+    commandsToCreate.push(
+        new SlashCommandBuilder()
+            .setName("aide")
+            .setDescription("Affiche la liste des commandes disponibles par le robot")
     );
 
-    commandsToCreate.push(new SlashCommandBuilder()
-        .setName('edt')
-        .setDescription('Affiche l\'emploi du temps sélectionné')
-        .addStringOption(option =>
-            option.setName('semaine')
-                .setDescription('Semaine concernée')
-                .setRequired(true)
-                .addChoices({
-                    name: 'Semaine actuelle',
-                    value: '1',
-                })
-                .addChoices({
-                    name: 'Semaine prochaine',
-                    value: '2',
-                })
-                .addChoices({
-                    name: 'Dans deux semaines',
-                    value: '3',
-                }),
-        ),
+    commandsToCreate.push(
+        new SlashCommandBuilder()
+            .setName("edt")
+            .setDescription("Affiche l'emploi du temps sélectionné")
+            .addStringOption((option) =>
+                option
+                    .setName("semaine")
+                    .setDescription("Semaine concernée")
+                    .setRequired(true)
+                    .addChoices({
+                        name: "Semaine actuelle",
+                        value: "1",
+                    })
+                    .addChoices({
+                        name: "Semaine prochaine",
+                        value: "2",
+                    })
+                    .addChoices({
+                        name: "Dans deux semaines",
+                        value: "3",
+                    })
+            )
     );
 
     // commandsToCreate.push(new SlashCommandBuilder()
@@ -67,95 +70,108 @@ export const setSlashCommands = async (guildId: string, client: Client) => {
     //     )
     // )
 
-    commandsToCreate.push(new SlashCommandBuilder()
-        .setName('info')
-        .setDescription('Affiche diverses informations concernant le robot'),
+    commandsToCreate.push(
+        new SlashCommandBuilder().setName("info").setDescription("Affiche diverses informations concernant le robot")
     );
 
-    commandsToCreate.push(new SlashCommandBuilder()
-        .setName('wifi')
-        .setDescription('Affiche diverses informations concernant la connexion wifi d\'ENIGMA'),
+    commandsToCreate.push(
+        new SlashCommandBuilder()
+            .setName("wifi")
+            .setDescription("Affiche diverses informations concernant la connexion wifi d'ENIGMA")
     );
 
-    if (guildId != process.env.GLD_ADMIN) { // PUBLIC COMMANDS
-        commandsToCreate.push(new SlashCommandBuilder()
-            .setName('devoirs')
-            .setDescription('Gestion des devoirs')
-            .addSubcommand(subcommand =>
-                subcommand
-                    .setName('afficher')
-                    .setDescription('Affiche les devoirs actuels'),
+    commandsToCreate.push(
+        new SlashCommandBuilder()
+            .setName("osi")
+            .setDescription("Affiche diverses informations concernant le réseau OSI")
+            .addStringOption((option) =>
+                option
+                    .setName("option")
+                    .setDescription("Option de la commande")
+                    .setRequired(true)
+                    .addChoices({
+                        name: "Mémo",
+                        value: "1",
+                    })
+                    .addChoices({
+                        name: "Image",
+                        value: "2",
+                    })
             )
-            .addSubcommand(subcommand =>
-                subcommand
-                    .setName('ajouter')
-                    .setDescription('Demande l\'ajout d\'un nouveau devoir')
-                    .addStringOption(option =>
-                        option.setName('date')
-                            .setDescription('Date au format JJ/MM/AAAA')
-                            .setRequired(true),
-                    )
-                    .addStringOption(option =>
-                        option.setName('matiere')
-                            .setDescription('Nom de la matière concernée')
-                            .setRequired(true),
-                    )
-                    .addStringOption(option =>
-                        option.setName('description')
-                            .setDescription('Détails du devoir à effectuer')
-                            .setRequired(true),
-                    ),
-            ),
+    );
+
+    if (guildId != process.env.GLD_ADMIN) {
+        // PUBLIC COMMANDS
+        commandsToCreate.push(
+            new SlashCommandBuilder()
+                .setName("devoirs")
+                .setDescription("Gestion des devoirs")
+                .addSubcommand((subcommand) =>
+                    subcommand.setName("afficher").setDescription("Affiche les devoirs actuels")
+                )
+                .addSubcommand((subcommand) =>
+                    subcommand
+                        .setName("ajouter")
+                        .setDescription("Demande l'ajout d'un nouveau devoir")
+                        .addStringOption((option) =>
+                            option.setName("date").setDescription("Date au format JJ/MM/AAAA").setRequired(true)
+                        )
+                        .addStringOption((option) =>
+                            option.setName("matiere").setDescription("Nom de la matière concernée").setRequired(true)
+                        )
+                        .addStringOption((option) =>
+                            option
+                                .setName("description")
+                                .setDescription("Détails du devoir à effectuer")
+                                .setRequired(true)
+                        )
+                )
         );
-    } else { // PRIVATE COMMANDS
-        commandsToCreate.push(new SlashCommandBuilder()
-            .setName('devoirs')
-            .setDescription('Gestion des devoirs')
-            .addSubcommand(subcommand =>
-                subcommand
-                    .setName('afficher')
-                    .setDescription('Affiche les devoirs actuels'),
-            )
-            .addSubcommand(subcommand =>
-                subcommand
-                    .setName('ajouter')
-                    .setDescription('Demande l\'ajout d\'un nouveau devoir')
-                    .addStringOption(option =>
-                        option.setName('date')
-                            .setDescription('Date au format JJ/MM/AAAA')
-                            .setRequired(true),
-                    )
-                    .addStringOption(option =>
-                        option.setName('matiere')
-                            .setDescription('Nom de la matière concernée')
-                            .setRequired(true),
-                    )
-                    .addStringOption(option =>
-                        option.setName('description')
-                            .setDescription('Détails du devoir à effectuer')
-                            .setRequired(true),
-                    ),
-            ),
+    } else {
+        // PRIVATE COMMANDS
+        commandsToCreate.push(
+            new SlashCommandBuilder()
+                .setName("devoirs")
+                .setDescription("Gestion des devoirs")
+                .addSubcommand((subcommand) =>
+                    subcommand.setName("afficher").setDescription("Affiche les devoirs actuels")
+                )
+                .addSubcommand((subcommand) =>
+                    subcommand
+                        .setName("ajouter")
+                        .setDescription("Demande l'ajout d'un nouveau devoir")
+                        .addStringOption((option) =>
+                            option.setName("date").setDescription("Date au format JJ/MM/AAAA").setRequired(true)
+                        )
+                        .addStringOption((option) =>
+                            option.setName("matiere").setDescription("Nom de la matière concernée").setRequired(true)
+                        )
+                        .addStringOption((option) =>
+                            option
+                                .setName("description")
+                                .setDescription("Détails du devoir à effectuer")
+                                .setRequired(true)
+                        )
+                )
         );
 
-        commandsToCreate.push(new SlashCommandBuilder()
-            .setName('say')
-            .setDescription('Envoie un message dans un salon choisi')
-            .addChannelOption(option =>
-                option.setName('channel')
-                    .setDescription('Salon où envoyer le message')
-                    .setRequired(true),
-            )
-            .addStringOption(option =>
-                option.setName('message')
-                    .setDescription('Message à envoyer')
-                    .setRequired(true),
-            ),
+        commandsToCreate.push(
+            new SlashCommandBuilder()
+                .setName("say")
+                .setDescription("Envoie un message dans un salon choisi")
+                .addChannelOption((option) =>
+                    option.setName("channel").setDescription("Salon où envoyer le message").setRequired(true)
+                )
+                .addStringOption((option) =>
+                    option.setName("message").setDescription("Message à envoyer").setRequired(true)
+                )
         );
     }
 
     // command creation
-    await Promise.all(commandsToCreate.map(async (command) => {
-        await guild.commands.create(command.toJSON());
-    }));
+    await Promise.all(
+        commandsToCreate.map(async (command) => {
+            await guild.commands.create(command.toJSON());
+        })
+    );
 };

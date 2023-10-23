@@ -6,6 +6,7 @@ import { edt } from "./edt";
 import { info } from "./info";
 import { say } from "./private/say";
 import { wifi } from "./wifi";
+import { osi } from "./osi";
 
 export default async (
     interaction: any | Interaction<CacheType> | ModalSubmitInteraction<CacheType>,
@@ -38,6 +39,9 @@ export default async (
                 return;
             case /^edt[0-9]+$/.test(commandName):
                 await edt({ num: commandName.replace("edt", ""), interaction: interaction, type: commandType });
+                return;
+            case /^osi$/.test(commandName):
+                await osi({ interaction: interaction, choice: interaction.options.get("option").value });
                 return;
             // admin commands
             case /^say$/.test(commandName):

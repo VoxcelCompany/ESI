@@ -4,13 +4,13 @@ import { getMomentDate } from '../utils/dates';
 import enigmaService from '../service/enigma.service';
 import Cursus from '../utils/enum/Cursus';
 
-interface IInfoParams {
+interface InfoParams {
     interaction: ModalSubmitInteraction<CacheType>;
     version: string;
     botUptime: Date;
 }
 
-export const info = async (params: IInfoParams): Promise<void> => {
+export const info = async (params: InfoParams): Promise<void> => {
     const { interaction, botUptime, version } = params;
 
     const { discordPing, uptime } = {
