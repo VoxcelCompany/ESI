@@ -99,14 +99,14 @@ class EnigmaService {
         });
 
         if (saveToDb) {
-            const infos = await this.getEdtFileDataFromApi(cursus);
-
-            const edtDb: EdtDb = {
-                ...infos,
-                datas: edtDatas,
-            };
-
-            await firebaseRepository.createData("edt", cursus, edtDb);
+            this.getEdtFileDataFromApi(cursus).then((infos) => {
+                const edtDb: EdtDb = {
+                    ...infos,
+                    datas: edtDatas,
+                };
+    
+                firebaseRepository.createData("edt", cursus, edtDb);
+            })
         }
 
         return edtDatas;
