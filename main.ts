@@ -1,7 +1,7 @@
 require("dotenv").config();
 import { ActivityType, Client, Events, GatewayIntentBits, Partials, PresenceStatusData, TextChannel } from "discord.js";
 import packageConfig from "./package.json";
-import interactionLaunch from "./src/commands";
+import interactionLaunch, { messageReceived } from "./src/commands";
 import { setSlashCommands } from "./src/commands/setSlashCommands";
 import schedulerService from "./src/service/scheduler.service";
 
@@ -38,15 +38,19 @@ client.on(Events.ClientReady, () => {
         type: ActivityType.Competing,
     });
 
-    // Send the client for all cron jobs
     schedulerService.setClient(client);
 
-    setSlashCommands(process.env.GLD_ENIGMA, client); // enigma
-    setSlashCommands(process.env.GLD_ADMIN, client); // private server
+    if (process.env.NODE_ENV !== "production") setSlashCommands(process.env.GLD_ENIGMA, client);
+    setSlashCommands(process.env.GLD_ADMIN, client);
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.user.bot) await interactionLaunch(interaction, client, packageConfig.version, new Date(), uptime);
+});
+
+client.on(Events.MessageCreate, (message) => {
+    if (message.author.bot) return;
+    messageReceived(message, client);
 });
 
 client.on(Events.MessageReactionAdd, (reaction, user) => {

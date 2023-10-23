@@ -152,8 +152,18 @@ export const setSlashCommands = async (guildId: string, client: Client) => {
         );
 
         commandsToCreate.push(new SlashCommandBuilder()
-            .setName('esi')
-            .setDescription('Affichage du message de bienvenue'),
+            .setName('say')
+            .setDescription('Envoie un message dans un salon choisi')
+            .addChannelOption(option =>
+                option.setName('channel')
+                    .setDescription('Salon où envoyer le message')
+                    .setRequired(true),
+            )
+            .addStringOption(option =>
+                option.setName('message')
+                    .setDescription('Message à envoyer')
+                    .setRequired(true),
+            ),
         );
     }
 
