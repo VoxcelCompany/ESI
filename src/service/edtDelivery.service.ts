@@ -1,11 +1,11 @@
 import { Client, TextChannel, ThreadAutoArchiveDuration } from "discord.js";
-import { getCustomizedDate, getMomentDate } from "../utils/dates";
 import { Moment } from "moment";
 import { CURSUS } from "../utils/constants/Cursus";
-import edtService from "./edt.service";
-import discordFormatterService from "./discordFormatter.service";
-import { capitalize } from "../utils/stringManager";
 import { MONTHS, WEEK_DAYS } from "../utils/constants/Dates";
+import { getMomentDate } from "../utils/dates";
+import Cursus from "../utils/enum/Cursus";
+import discordFormatterService from "./discordFormatter.service";
+import edtService from "./edt.service";
 
 class EdtDeliveryService {
     lastDateSent: Moment;
@@ -31,17 +31,28 @@ class EdtDeliveryService {
 
                 const messageContent = edtService.getEdtMessageContent(messageFields, +weekNumber, cursus, false);
 
-                const channel = client.channels.cache.get(process.env.CHNL_EDT) as TextChannel;
+                let channelId: string;
+                switch (cursus) {
+                    case Cursus.CYBER:
+                        channelId = process.env.CHNL_CYBER;
+                        break;
+                    case Cursus.RETAIL:
+                        channelId = process.env.CHNL_RETAIL;
+                        break;
+                    default:
+                        throw new Error("Cursus not found");
+                }
+
+                const channel = client.channels.cache.get(channelId) as TextChannel;
 
                 if (channel) {
                     const message = await channel.send(messageContent);
 
                     message.react(process.env.EMOJI_MERCI);
 
-                    const dateDay = WEEK_DAYS[currentDate.day() - 1];
-                    const displayDate = `${dateDay} ${currentDate.day()} ${
-                      MONTHS[currentDate.month()]
-                  } ${currentDate.year()}`;
+                    const displayDate = `${WEEK_DAYS[0]} ${currentDate.date()} ${
+                        MONTHS[currentDate.month()]
+                    } ${currentDate.year()}`;
 
                     message.startThread({
                         name: `🗓️ EDT - ${displayDate}`,
