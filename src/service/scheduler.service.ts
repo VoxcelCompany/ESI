@@ -1,6 +1,7 @@
 import { Client } from "discord.js";
 import { Cron } from "../models/Cron";
 import EnigmaService from "./enigma.service";
+import edtDeliveryService from "./edtDelivery.service";
 
 class SchedulerService {
     private client: Client;
@@ -8,6 +9,10 @@ class SchedulerService {
         {
             callback: () => EnigmaService.checkEdtUpdate(this.client),
             timer: 1800000,
+        },
+        {
+            callback: () => edtDeliveryService.sendEdt(this.client),
+            timer: 59000,
         },
     ];
 

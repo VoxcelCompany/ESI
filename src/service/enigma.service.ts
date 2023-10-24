@@ -126,16 +126,16 @@ class EnigmaService {
     }
 
     public async getEdtUpdate(cursus: Cursus, oldEdt?: EdtDb): Promise<EdtDiff> {
-        const edtFromDb: EdtDb = (await firebaseRepository.getAllData("edt"))[cursus];
+        if (!oldEdt) oldEdt = await this.getEdtFromDb(cursus);
         const edtInfo = await this.getEdtFileDataFromApi(cursus);
 
-        if (!edtFromDb || !edtFromDb.lastModifiedDateTime) {
+        if (!oldEdt || !oldEdt.lastModifiedDateTime) {
             this.getEdtFromApi(cursus, true);
             return { isDiff: false };
         }
 
         const newDate = getMomentDate(edtInfo.lastModifiedDateTime);
-        const oldDate = getMomentDate(oldEdt?.lastModifiedDateTime ?? edtFromDb.lastModifiedDateTime);
+        const oldDate = getMomentDate(oldEdt?.lastModifiedDateTime);
 
         if (!newDate.isAfter(oldDate)) return { isDiff: false };
 
