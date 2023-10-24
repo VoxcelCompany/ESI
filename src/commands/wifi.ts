@@ -1,11 +1,11 @@
 import { CacheType, InteractionEditReplyOptions, ModalSubmitInteraction } from "discord.js";
 
-interface IWifiParams {
+interface WifiParams {
     interaction: ModalSubmitInteraction<CacheType>;
     version: string;
 }
 
-export const wifi = async (params: IWifiParams): Promise<void> => {
+export const wifi = async (params: WifiParams): Promise<void> => {
     const { interaction, version } = params;
 
     await interaction.deferReply({ ephemeral: false });

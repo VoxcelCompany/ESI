@@ -1,18 +1,12 @@
 import {
-    ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle,
     CacheType,
     Client,
     GuildMember,
-    ModalSubmitInteraction,
+    ModalSubmitInteraction
 } from "discord.js";
 import discordFormatterService from "../service/discordFormatter.service";
 import edtService from "../service/edt.service";
-import { getCustomizedDate } from "../utils/dates";
 import CommandType from "../utils/enum/CommandType";
-import Cursus from "../utils/enum/Cursus";
-import { capitalize } from "../utils/stringManager";
 
 interface EdtParams {
     weekNumber: string;

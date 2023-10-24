@@ -6,6 +6,7 @@ import { edt } from "./edt";
 import { info } from "./info";
 import { say } from "./private/say";
 import { wifi } from "./wifi";
+import { osi } from "./osi";
 
 export default async (
     interaction: any | Interaction<CacheType> | ModalSubmitInteraction<CacheType>,
@@ -24,7 +25,7 @@ export default async (
                 await aide({ interaction: interaction, version: version });
                 return;
             case /^info$/.test(commandName):
-                await info({ interaction: interaction, version: version, time: callDate, botUptime: uptime });
+                await info({ interaction: interaction, version: version, botUptime: uptime });
                 return;
             case /^wifi$/.test(commandName):
                 await wifi({ interaction: interaction, version: version });
@@ -40,6 +41,9 @@ export default async (
                 return;
             case /^edt[0-9]+$/.test(commandName):
                 await edt({ weekNumber: commandName.replace("edt", ""), interaction: interaction, type: commandType, client });
+                return;
+            case /^osi$/.test(commandName):
+                await osi({ interaction: interaction, choice: interaction.options.get("option").value });
                 return;
             // admin commands
             case /^say$/.test(commandName):
@@ -87,5 +91,11 @@ export const messageReceived = async (message: Message, client: Client): Promise
                 });
                 return;
         }
+    }
+
+    switch (true) {
+        case /bien du plaisir/i.test(message.content):
+            await message.channel.send("Dixit Thietty !");
+            return;
     }
 };
