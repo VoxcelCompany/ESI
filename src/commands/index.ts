@@ -1,9 +1,10 @@
-import { CacheType, Client, Interaction, ModalSubmitInteraction, TextChannel } from "discord.js";
+import {CacheType, Client, Interaction, ModalSubmitInteraction, TextChannel} from "discord.js";
 import CommandType from "../utils/enum/CommandType";
-import { aide } from "./aide";
-import { edt } from "./edt";
-import { info } from "./info";
-import { wifi } from "./wifi";
+import {aide} from "./aide";
+import {edt} from "./edt";
+import {info} from "./info";
+import {wifi} from "./wifi";
+import {menu} from "./menu";
 
 export default async (interaction: any | Interaction<CacheType> | ModalSubmitInteraction<CacheType>, client: Client, version: string, callDate: Date, uptime: Date): Promise<void> => {
     const commandType = interaction.isCommand() ? CommandType.COMMAND : CommandType.BUTTON;
@@ -27,6 +28,18 @@ export default async (interaction: any | Interaction<CacheType> | ModalSubmitInt
             case /^edt[0-9]+$/.test(commandName):
                 await edt({ num: commandName.replace('edt', ''), interaction: interaction, type: commandType });
                 return;
+            case /^menu$/.test(commandName):
+                return await menu({
+                    chosenOptionIndex: interaction.options.get('jour').value,
+                    interaction: interaction,
+                    commandType: commandType,
+                });
+            case /^menu[0-9]+$/.test(commandName):
+                return await menu({
+                    chosenOptionIndex: commandName.replace('menu', ''),
+                    interaction: interaction,
+                    commandType: commandType,
+                });
             // case /stats/.test(commandName):
             //     if (interaction.options?._subcommand == "devoirs") {
             //         return await devstats({ interaction: interaction, version: version });
