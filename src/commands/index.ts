@@ -32,13 +32,15 @@ export default async (
                 return;
             case /^edt$/.test(commandName):
                 await edt({
-                    num: interaction.options.get("semaine").value,
+                    weekNumber: interaction.options.get('semaine').value,
+                    typeNumber: interaction.options.get('type')?.value,
                     interaction: interaction,
                     type: commandType,
+                    client,
                 });
                 return;
             case /^edt[0-9]+$/.test(commandName):
-                await edt({ num: commandName.replace("edt", ""), interaction: interaction, type: commandType });
+                await edt({ weekNumber: commandName.replace("edt", ""), interaction: interaction, type: commandType, client });
                 return;
             case /^osi$/.test(commandName):
                 await osi({ interaction: interaction, choice: interaction.options.get("option").value });

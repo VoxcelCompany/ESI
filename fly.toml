@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for esibot on 2023-10-09T22:07:43+02:00
+# fly.toml app configuration file generated for esi on 2023-10-23T22:34:35+02:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "esibot"
+app = "esi"
 primary_region = "cdg"
 
 [build]

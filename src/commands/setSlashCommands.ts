@@ -13,28 +13,39 @@ export const setSlashCommands = async (guildId: string, client: Client) => {
             .setDescription("Affiche la liste des commandes disponibles par le robot")
     );
 
-    commandsToCreate.push(
-        new SlashCommandBuilder()
-            .setName("edt")
-            .setDescription("Affiche l'emploi du temps sélectionné")
-            .addStringOption((option) =>
-                option
-                    .setName("semaine")
-                    .setDescription("Semaine concernée")
-                    .setRequired(true)
-                    .addChoices({
-                        name: "Semaine actuelle",
-                        value: "1",
-                    })
-                    .addChoices({
-                        name: "Semaine prochaine",
-                        value: "2",
-                    })
-                    .addChoices({
-                        name: "Dans deux semaines",
-                        value: "3",
-                    })
-            )
+    commandsToCreate.push(new SlashCommandBuilder()
+        .setName('edt')
+        .setDescription('Affiche l\'emploi du temps sélectionné')
+        .addStringOption(option =>
+            option.setName('semaine')
+                .setDescription('Semaine concernée')
+                .setRequired(true)
+                .addChoices({
+                    name: 'Semaine actuelle',
+                    value: '1',
+                })
+                .addChoices({
+                    name: 'Semaine prochaine',
+                    value: '2',
+                })
+                .addChoices({
+                    name: 'Dans deux semaines',
+                    value: '3',
+                }),
+        )
+        .addStringOption(option =>
+            option.setName('type')
+                .setDescription('Type d\'emploi du temps')
+                .setRequired(false)
+                .addChoices({
+                    name: 'Cyber',
+                    value: '1',
+                })
+                .addChoices({
+                    name: 'Retail',
+                    value: '2',
+                }),
+        )
     );
 
     // commandsToCreate.push(new SlashCommandBuilder()
