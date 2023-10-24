@@ -40,8 +40,10 @@ client.on(Events.ClientReady, () => {
 
     schedulerService.setClient(client);
 
-    if (process.env.NODE_ENV !== "production") setSlashCommands(process.env.GLD_ENIGMA, client);
     setSlashCommands(process.env.GLD_ADMIN, client);
+    if (process.env.NODE_ENV !== "development") {
+        setSlashCommands(process.env.GLD_ENIGMA, client);
+    }
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
