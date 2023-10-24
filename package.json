@@ -1,7 +1,7 @@
 {
-  "name": "bie",
-  "version": "4.1.0",
-  "description": "Bie Bot made by Nekewo",
+  "name": "esi",
+  "version": "1.0.0",
+  "description": "Gunther Bot",
   "main": "main.js",
   "scripts": {
     "start": "tsc && node dist/main.js",
@@ -9,17 +9,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JulesSorensen/bie.git"
+    "url": "git+https://github.com/JulesSorensen/esi.git"
   },
   "keywords": [
-    "bie"
+    "esi"
   ],
   "author": "Nekewo",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/JulesSorensen/BIE/issues"
+    "url": "https://github.com/JulesSorensen/ESI/issues"
   },
-  "homepage": "https://github.com/JulesSorensen/BIE#readme",
+  "homepage": "https://github.com/JulesSorensen/ESI#readme",
   "dependencies": {
     "axios": "^0.25.0",
     "crypto-js": "^4.1.1",
@@ -32,7 +32,8 @@
     "moment-timezone": "^0.5.43",
     "qs": "^6.11.0",
     "sha1": "^1.1.1",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@flydotio/dockerfile": "^0.4.10",
