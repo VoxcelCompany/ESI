@@ -135,7 +135,7 @@ class EnigmaService {
         }
 
         const newDate = getMomentDate(edtInfo.lastModifiedDateTime);
-        const oldDate = getMomentDate(oldEdt.lastModifiedDateTime);
+        const oldDate = getMomentDate(oldEdt?.lastModifiedDateTime ?? edtFromDb.lastModifiedDateTime);
 
         if (!newDate.isAfter(oldDate)) return { isDiff: false };
 
