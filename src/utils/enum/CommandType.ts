@@ -1,6 +1,7 @@
 enum CommandType {
     COMMAND = "COMMAND",
-    BUTTON = "BUTTON"
+    BUTTON = "BUTTON",
+    MESSAGE = "MESSAGE",
 }
 
 export default CommandType;

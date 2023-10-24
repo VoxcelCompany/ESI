@@ -1,11 +1,16 @@
+import { BaseGuildTextChannel, Client, ThreadAutoArchiveDuration } from "discord.js";
 import * as XLSX from "xlsx";
 import Edt from "../models/Edt";
+import { EdtChanges, EdtDiff } from "../models/EdtChanges";
 import EdtDb from "../models/EdtDb";
 import EdtFile from "../models/EdtFile";
 import EnigmaRepository from "../repository/enigma.repository";
 import firebaseRepository from "../repository/firebase.repository";
-import {getMomentDate} from "../utils/dates";
+import { CURSUS } from "../utils/constants/Cursus";
+import { getMomentDate } from "../utils/dates";
 import Cursus from "../utils/enum/Cursus";
+import { capitalize } from "../utils/stringManager";
+import DiscordFormatterService from "./discordFormatter.service";
 
 class EnigmaService {
     public async getEdtFileDataFromApi(cursus: Cursus): Promise<EdtFile> {
@@ -31,14 +36,14 @@ class EnigmaService {
                 user: {
                     displayName: datas.lastModifiedBy?.user?.displayName ?? false,
                     email: datas.lastModifiedBy?.user?.email ?? false,
-                }
-            }
-        }
-    };
+                },
+            },
+        };
+    }
 
-    public async getEdtFromApi(cur: Cursus, saveToDb = false): Promise<Edt> {
+    private async getEdtFromApi(cursus: Cursus, saveToDb = false): Promise<Edt> {
         let fileId: string;
-        switch (cur) {
+        switch (cursus) {
             case Cursus.RETAIL:
                 fileId = process.env.MS_EXCEL_RETAIL_ID;
                 break;
@@ -51,7 +56,7 @@ class EnigmaService {
 
         const fileContent: ArrayBuffer = await EnigmaRepository.getFileContent(fileId);
 
-        const workbook = XLSX.read(fileContent, { type: 'buffer' });
+        const workbook = XLSX.read(fileContent, { type: "buffer" });
 
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
@@ -69,14 +74,19 @@ class EnigmaService {
             };
 
             row.forEach((value: any, i: number) => {
-                while (!header[i] && i > 0) { i--; }
+                while (!header[i] && i > 0) {
+                    i--;
+                }
 
                 const fieldName = this.translateFieldName(header[i]);
 
                 if (fieldName !== false) {
-                    rowInfos[fieldName] = fieldName === "date" ?
-                        getMomentDate(new Date((value - 2) * 24 * 3600 * 1000 + Date.parse('1900-01-01'))).format("YYYY-MM-DD") :
-                        value;
+                    rowInfos[fieldName] =
+                        fieldName === "date"
+                            ? getMomentDate(new Date((value - 2) * 24 * 3600 * 1000 + Date.parse("1900-01-01"))).format(
+                                  "YYYY-MM-DD"
+                              )
+                            : value;
                 }
             });
 
@@ -89,18 +99,18 @@ class EnigmaService {
         });
 
         if (saveToDb) {
-            const infos = await this.getEdtFileDataFromApi(cur);
+            this.getEdtFileDataFromApi(cursus).then((infos) => {
+                const edtDb: EdtDb = {
+                    ...infos,
+                    datas: edtDatas,
+                };
 
-            const edtDb: EdtDb = {
-                ...infos,
-                datas: edtDatas,
-            };
-
-            await firebaseRepository.createData("edt", cur, edtDb);
+                firebaseRepository.createData("edt", cursus, edtDb);
+            });
         }
 
         return edtDatas;
-    };
+    }
 
     private translateFieldName(fieldName: string): string | false {
         switch (fieldName) {
@@ -113,10 +123,170 @@ class EnigmaService {
             default:
                 return false;
         }
-    };
+    }
 
-    public async getEdtFromDb(cur: Cursus): Promise<EdtDb> {
-        return (await firebaseRepository.getAllData("edt"))[cur];
+    public async getEdtUpdate(cursus: Cursus, oldEdt?: EdtDb): Promise<EdtDiff> {
+        if (!oldEdt) oldEdt = await this.getEdtFromDb(cursus);
+        const edtInfo = await this.getEdtFileDataFromApi(cursus);
+
+        if (!oldEdt || !oldEdt.lastModifiedDateTime) {
+            this.getEdtFromApi(cursus, true);
+            return { isDiff: false };
+        }
+
+        const newDate = getMomentDate(edtInfo.lastModifiedDateTime);
+        const oldDate = getMomentDate(oldEdt?.lastModifiedDateTime);
+
+        if (!newDate.isAfter(oldDate)) return { isDiff: false };
+
+        const newEdt = await this.getEdtFromApi(cursus, true);
+        const edtChangesData: EdtChanges = {};
+        const today = getMomentDate(new Date()).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+
+        for (const date in newEdt) {
+            if (getMomentDate(date, "YYYY-MM-DD").isBefore(today)) continue;
+
+            const isSameMorningCourse = newEdt[date].morning === oldEdt.datas[date].morning;
+            const isSameAfternoonCourse = newEdt[date].afternoon === oldEdt.datas[date].afternoon;
+
+            if (isSameMorningCourse && isSameAfternoonCourse) continue;
+
+            if (!isSameMorningCourse && !isSameAfternoonCourse) {
+                edtChangesData[date] = {
+                    oldMorning: oldEdt.datas[date].morning,
+                    oldAfternoon: oldEdt.datas[date].afternoon,
+                    newMorning: newEdt[date].morning,
+                    newAfternoon: newEdt[date].afternoon,
+                };
+            } else if (!isSameMorningCourse) {
+                edtChangesData[date] = {
+                    oldMorning: oldEdt.datas[date].morning,
+                    oldAfternoon: oldEdt.datas[date].afternoon,
+                    newMorning: newEdt[date].morning,
+                    newAfternoon: false,
+                };
+            } else {
+                edtChangesData[date] = {
+                    oldMorning: oldEdt.datas[date].morning,
+                    oldAfternoon: oldEdt.datas[date].afternoon,
+                    newMorning: false,
+                    newAfternoon: newEdt[date].afternoon,
+                };
+            }
+        }
+
+        return {
+            isDiff: true,
+            edtChanges: {
+                authorName: edtInfo.lastModifiedBy.user.displayName,
+                data: edtChangesData,
+            },
+        };
+    }
+
+    private async alertEdtUpdate(client: Client, cursus: Cursus, edtUpdate: EdtDiff): Promise<void> {
+        const formatedFields = DiscordFormatterService.formatUpdateEdtFields(edtUpdate.edtChanges.data);
+
+        if (formatedFields.length === 0) return;
+
+        let channelId = "";
+        switch (cursus) {
+            case Cursus.RETAIL:
+                channelId = process.env.CHNL_RETAIL_ALERT;
+                break;
+            case Cursus.CYBER:
+                channelId = process.env.CHNL_CYBER_ALERT;
+                break;
+            default:
+                throw new Error("Invalid cursus");
+        }
+        const channel = client.channels.cache.get(channelId) as BaseGuildTextChannel;
+
+        const msg = await channel.send({
+            content: `<a:bell:868901922483097661> <@&${process.env.ROLE_NOTIFIED}>`,
+            embeds: [
+                {
+                    title: `Changement${formatedFields.length > 1 ? "s" : ""} dans l'emploi du temps`,
+                    description: `${
+                        formatedFields.length > 1
+                            ? "Plusieurs changements ont étés détectés"
+                            : "Un changement a été détecté"
+                    } dans l'emploi du temps de la section ${capitalize(cursus)} !\n\n`,
+                    color: 0x00ff00,
+                    fields: formatedFields,
+                    timestamp: new Date().toISOString(),
+                    footer: {
+                        text: `${
+                            edtUpdate.edtChanges.authorName !== false ? `${edtUpdate.edtChanges.authorName} - ` : ""
+                        }${cursus}`,
+                    },
+                },
+            ],
+        });
+
+        const threadTitles = [
+            `Ça bouge en ${capitalize(cursus)} !`,
+            `${edtUpdate.edtChanges.authorName} a encore fait des siennes...`,
+            `Que se passe-t-il en ${capitalize(cursus)} ?`,
+            `Mais pourquoi ${edtUpdate.edtChanges.authorName} ??`,
+            "PITIÉ",
+            "Saperlipopette...",
+            "$%*µ£",
+            "Mais c'est pas possible !",
+            `Arrête ça ${edtUpdate.edtChanges.authorName}`,
+            `Ça vous apprendra les ${cursus.toLowerCase()}`,
+        ];
+        const threadTitle = threadTitles[Math.floor(Math.random() * threadTitles.length)];
+
+        // create thread with message
+        await msg.startThread({
+            name: threadTitle,
+            autoArchiveDuration: ThreadAutoArchiveDuration.OneDay,
+        });
+    }
+
+    public checkEdtUpdate(client: Client): void {
+        CURSUS.forEach(async (cursus: Cursus) => {
+            const edtUpdate = await this.getEdtUpdate(cursus);
+
+            if (!edtUpdate.isDiff) return;
+
+            await this.alertEdtUpdate(client, cursus, edtUpdate);
+        });
+    }
+
+    public async getEdtFromDb(cursus: Cursus): Promise<EdtDb> {
+        return (await firebaseRepository.getAllData("edt"))[cursus];
+    }
+
+    public async getLatestEdt(cursus: Cursus, client: Client): Promise<EdtDb> {
+        const edtDbDatas = await this.getEdtFromDb(cursus);
+        const edtFileDatas = await this.getEdtFileDataFromApi(cursus);
+
+        if (!edtDbDatas.lastModifiedDateTime) {
+            const edtDatas = await this.getEdtFromApi(cursus, true);
+
+            return {
+                ...edtFileDatas,
+                datas: edtDatas,
+            };
+        }
+
+        const edtFileDate = getMomentDate(edtFileDatas.lastModifiedDateTime);
+        const edtDbDate = getMomentDate(edtDbDatas.lastModifiedDateTime);
+
+        if (edtFileDate.isSameOrBefore(edtDbDate, "minutes")) return edtDbDatas;
+
+        const edtDatas = await this.getEdtFromApi(cursus, true);
+
+        this.getEdtUpdate(cursus, edtDbDatas).then((r) => {
+            this.alertEdtUpdate(client, cursus, r);
+        });
+
+        return {
+            ...edtFileDatas,
+            datas: edtDatas,
+        };
     }
 }
 
