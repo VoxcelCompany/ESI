@@ -13,7 +13,7 @@ import { capitalize } from "../utils/stringManager";
 import DiscordFormatterService from "./discordFormatter.service";
 
 class EnigmaService {
-    private async getEdtFileDataFromApi(cursus: Cursus): Promise<EdtFile> {
+    public async getEdtFileDataFromApi(cursus: Cursus): Promise<EdtFile> {
         let fileId: string;
         switch (cursus) {
             case Cursus.RETAIL:
@@ -104,9 +104,9 @@ class EnigmaService {
                     ...infos,
                     datas: edtDatas,
                 };
-    
+
                 firebaseRepository.createData("edt", cursus, edtDb);
-            })
+            });
         }
 
         return edtDatas;
@@ -126,18 +126,18 @@ class EnigmaService {
     }
 
     public async getEdtUpdate(cursus: Cursus, oldEdt?: EdtDb): Promise<EdtDiff> {
+        const edtFromDb: EdtDb = (await firebaseRepository.getAllData("edt"))[cursus];
         const edtInfo = await this.getEdtFileDataFromApi(cursus);
 
-        if (!oldEdt) {
-            oldEdt = await this.getEdtFromDb(cursus);
-
-            if (!oldEdt.lastModifiedDateTime) return { isDiff: false };
-
-            const newDate = getMomentDate(edtInfo.lastModifiedDateTime);
-            const oldDate = getMomentDate(oldEdt.lastModifiedDateTime);
-
-            if (!newDate.isAfter(oldDate)) return { isDiff: false };
+        if (!edtFromDb || !edtFromDb.lastModifiedDateTime) {
+            this.getEdtFromApi(cursus, true);
+            return { isDiff: false };
         }
+
+        const newDate = getMomentDate(edtInfo.lastModifiedDateTime);
+        const oldDate = getMomentDate(oldEdt?.lastModifiedDateTime ?? edtFromDb.lastModifiedDateTime);
+
+        if (!newDate.isAfter(oldDate)) return { isDiff: false };
 
         const newEdt = await this.getEdtFromApi(cursus, true);
         const edtChangesData: EdtChanges = {};

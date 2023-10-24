@@ -1,20 +1,20 @@
 import { CacheType, ModalSubmitInteraction } from 'discord.js';
 import firebaseRepository from '../repository/firebase.repository';
 import { getMomentDate } from '../utils/dates';
+import enigmaService from '../service/enigma.service';
+import Cursus from '../utils/enum/Cursus';
 
-interface IInfoParams {
+interface InfoParams {
     interaction: ModalSubmitInteraction<CacheType>;
     version: string;
-    time: Date;
     botUptime: Date;
 }
 
-export const info = async (params: IInfoParams): Promise<void> => {
-    const { interaction, time, botUptime, version } = params;
+export const info = async (params: InfoParams): Promise<void> => {
+    const { interaction, botUptime, version } = params;
 
-    const { discordPing, botPing, uptime } = {
+    const { discordPing, uptime } = {
         discordPing: `${Math.abs(new Date().getTime() - interaction.createdTimestamp)}ms`,
-        botPing: `${new Date().getTime() - new Date(time).getTime()}ms`,
         uptime: getMomentDate(botUptime).format("[En ligne depuis le] DD/MM/YYYY [à] HH[h]mm"),
     };
 
@@ -24,16 +24,20 @@ export const info = async (params: IInfoParams): Promise<void> => {
     await firebaseRepository.getAllData('edt');
     const dbDate = `${new Date().getTime() - firstDbDate.getTime()}ms`;
 
+    const firstMicrosoftDate = new Date();
+    await enigmaService.getEdtFileDataFromApi(Cursus.RETAIL);
+    const microsoftDate = `${new Date().getTime() - firstMicrosoftDate.getTime()}ms`;
+
     await interaction.editReply({
         embeds: [{
-            color: 0x42fcff,
+            color: 0xff0000,
             title: `ℹ️ Informations`,
             description: `Voici les informations sur le Bot v${version}\n­`,
             fields: [
-                { name: `🕒 Uptime`, value: uptime, inline: true },
-                { name: `🏓 Ping Bot`, value: botPing, inline: true },
+                { name: `🕒 Uptime`, value: uptime, inline: false },
                 { name: `🏓 Ping Discord`, value: discordPing, inline: true },
                 { name: `🖥️ Ping Database`, value: dbDate, inline: true },
+                { name: `🗂️ Ping Microsoft`, value: microsoftDate, inline: true },
             ],
             timestamp: new Date().toISOString(),
         }],
