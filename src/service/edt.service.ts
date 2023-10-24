@@ -1,4 +1,13 @@
-import { ActionRowBuilder, AnyComponentBuilder, ButtonBuilder, ButtonStyle, Client, GuildMember, InteractionEditReplyOptions, MessagePayload } from "discord.js";
+import {
+    ActionRowBuilder,
+    AnyComponentBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    Client,
+    GuildMember,
+    InteractionEditReplyOptions,
+    MessagePayload,
+} from "discord.js";
 import { EdtDataCmd } from "../models/EdtDataCmd";
 import { WEEK_DAYS } from "../utils/constants/Dates";
 import { getCustomizedDate, getMomentDate } from "../utils/dates";
@@ -160,7 +169,7 @@ class EdtService {
                 .setStyle(ButtonStyle.Danger)
                 .setDisabled(weekNumber >= 60)
         );
-        (messageContent as InteractionEditReplyOptions).components = buttonsRow;
+        (messageContent as InteractionEditReplyOptions).components = [buttonsRow as any];
 
         return messageContent;
     }

@@ -29,29 +29,7 @@ class EdtDeliveryService {
                 const edtDatas = await edtService.getEdtDatas(weekNumber, cursus, client);
                 const messageFields = discordFormatterService.formatEdtCommandFields(edtDatas);
 
-                const weekDate = getCustomizedDate(weekNumber - 1);
-                const displayDate = weekDate.format("DD/MM/YYYY");
-                const diplayWeek = {
-                    "1": "Cette semaine",
-                    "2": "Semaine prochaine",
-                };
-
-                const messageContent = {
-                    embeds: [
-                        {
-                            color: 0xff0000,
-                            title: `🗓️ **__${
-                                diplayWeek[weekNumber] !== undefined
-                                    ? diplayWeek[weekNumber]
-                                    : `Dans ${weekNumber} semaines`
-                            }__ ↔ ${displayDate}** `,
-                            fields: messageFields,
-                            footer: {
-                                text: `ENIGMA - ${capitalize(cursus)}`,
-                            },
-                        },
-                    ],
-                };
+                const messageContent = edtService.getEdtMessageContent(messageFields, +weekNumber, cursus, false);
 
                 const channel = client.channels.cache.get(process.env.CHNL_EDT) as TextChannel;
 
