@@ -1,9 +1,10 @@
-import { Client, GuildMember } from "discord.js";
+import { ActionRowBuilder, AnyComponentBuilder, ButtonBuilder, ButtonStyle, Client, GuildMember, InteractionEditReplyOptions, MessagePayload } from "discord.js";
 import { EdtDataCmd } from "../models/EdtDataCmd";
 import { WEEK_DAYS } from "../utils/constants/Dates";
 import { getCustomizedDate, getMomentDate } from "../utils/dates";
 import Cursus from "../utils/enum/Cursus";
 import enigmaService from "./enigma.service";
+import { capitalize } from "../utils/stringManager";
 
 class EdtService {
     public getUserCursus(
@@ -73,8 +74,6 @@ class EdtService {
                 displayWeek = `⎯ Jour inconu`;
             }
 
-
-
             if (!course || !courseDate.isSameOrAfter(weekDate) || !courseDate.isBefore(endWeekDate)) continue;
 
             edtDatas.push({
@@ -110,6 +109,60 @@ class EdtService {
             });
 
         return edtDatas;
+    }
+
+    public getEdtMessageContent(
+        messageFields: {
+            name: string;
+            value: string;
+        }[],
+        weekNumber: number,
+        userCursus: Cursus,
+        showButtons: boolean = true
+    ): MessagePayload | InteractionEditReplyOptions {
+        const weekDate = getCustomizedDate(+weekNumber - 1);
+        const displayDate = weekDate.format("DD/MM/YYYY");
+        const diplayWeek = {
+            "1": "Cette semaine",
+            "2": "Semaine prochaine",
+        };
+
+        const messageContent = {
+            embeds: [
+                {
+                    color: 0xff0000,
+                    title: `🗓️ **__${
+                        diplayWeek[weekNumber] !== undefined ? diplayWeek[weekNumber] : `Dans ${weekNumber} semaines`
+                    }__ ↔ ${displayDate}** `,
+                    fields: messageFields,
+                    footer: {
+                        text: `ENIGMA - ${capitalize(userCursus)}`,
+                    },
+                },
+            ],
+        };
+
+        if (!showButtons) return messageContent;
+
+        const buttonsRow = new ActionRowBuilder().addComponents(
+            new ButtonBuilder()
+                .setCustomId(`EDT${weekNumber - 1}`)
+                .setLabel("❰❰ ­ Précédent")
+                .setStyle(ButtonStyle.Danger)
+                .setDisabled(weekNumber <= 1),
+            new ButtonBuilder()
+                .setLabel("Détails")
+                .setStyle(ButtonStyle.Link)
+                .setURL(userCursus == Cursus.CYBER ? process.env.LINK_CYBER : process.env.LINK_RETAIL),
+            new ButtonBuilder()
+                .setCustomId(`EDT${weekNumber + 1}`)
+                .setLabel("Suivant ­ ❱❱")
+                .setStyle(ButtonStyle.Danger)
+                .setDisabled(weekNumber >= 60)
+        );
+        (messageContent as InteractionEditReplyOptions).components = buttonsRow;
+
+        return messageContent;
     }
 }
 
