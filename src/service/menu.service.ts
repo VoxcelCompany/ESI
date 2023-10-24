@@ -31,6 +31,10 @@ class MenuService {
         return dayMenu ?? getDefaultMenu(date);
     }
 
+    public getMenusDaysNumber(): number {
+        return this.crousMenus.length;
+    }
+
     private async generateCrousMenus(): Promise<void> {
         const menuDocument: Document = await this.getCrousMenuDocument();
 
