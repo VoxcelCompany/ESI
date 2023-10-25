@@ -2,6 +2,7 @@ import { Client } from "discord.js";
 import { Cron } from "../models/Cron";
 import EnigmaService from "./enigma.service";
 import edtDeliveryService from "./edtDelivery.service";
+import MenuService from "./menu.service";
 
 class SchedulerService {
     private client: Client;
@@ -9,10 +10,17 @@ class SchedulerService {
         {
             callback: () => EnigmaService.checkEdtUpdate(this.client),
             timer: 1800000,
+            launchOnStart: true
         },
         {
             callback: () => edtDeliveryService.sendEdt(this.client),
             timer: 59000,
+            launchOnStart: true
+        },
+        {
+            callback: () => MenuService.generateCrousMenus(),
+            timer: 18000000,
+            launchOnStart: false
         },
     ];
 
@@ -26,7 +34,7 @@ class SchedulerService {
 
     private launchCrons(): void {
         this.crons.forEach((cron) => {
-            cron.callback();
+            if (cron.launchOnStart) cron.callback();
 
             setInterval(() => {
                 cron.callback();
