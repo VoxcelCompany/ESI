@@ -8,15 +8,6 @@ import {capitalize} from "../utils/stringManager";
 class MenuService {
     private crousMenus: Array<Menu> = [];
 
-    constructor() {
-        this.generateCrousMenus().then(
-            () => setInterval(
-            this.generateCrousMenus,
-                18000000,
-            )
-        );
-    }
-
     public async getDays(format: string = "dddd D MMMM"): Promise<Array<string>> {
         if (this.crousMenus.length === 0) await this.generateCrousMenus();
         return this.crousMenus.map((menu) => capitalize(menu.date.format(format)));
@@ -35,7 +26,7 @@ class MenuService {
         return this.crousMenus.length;
     }
 
-    private async generateCrousMenus(): Promise<void> {
+    public async generateCrousMenus(): Promise<void> {
         const menuDocument: Document = await this.getCrousMenuDocument();
 
         const menusTitles: Array<string> = this.getWeekMenusTitles(menuDocument);
