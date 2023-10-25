@@ -1,4 +1,5 @@
-import { Client, SlashCommandBuilder } from "discord.js";
+import {Client, SlashCommandBuilder} from "discord.js";
+import {menuSlashCommand} from "./menu";
 
 export const setSlashCommands = async (guildId: string, client: Client) => {
     const guild = client.guilds.cache.get(guildId);
@@ -47,6 +48,8 @@ export const setSlashCommands = async (guildId: string, client: Client) => {
                 }),
         )
     );
+
+    commandsToCreate.push(await menuSlashCommand());
 
     // commandsToCreate.push(new SlashCommandBuilder()
     //     .setName('stats')
