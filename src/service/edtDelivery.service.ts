@@ -13,7 +13,7 @@ class EdtDeliveryService {
     async sendEdt(client: Client) {
         const currentDate = getMomentDate();
 
-        if (currentDate.day() !== 0 && currentDate.hours() !== 7 && currentDate.minutes() !== 1) return;
+        if (currentDate.day() !== 0 || currentDate.hours() !== 7 || currentDate.minutes() !== 1) return;
 
         if (this.lastDateSent) {
             const isAlreadySent = this.lastDateSent

@@ -43,5 +43,7 @@ export const edt = async (params: EdtParams): Promise<void> => {
     await interaction.editReply(messageContent);
 
     // Add reactions to the message
+    if (type !== CommandType.COMMAND) return;
+
     (await interaction.fetchReply()).react(process.env.EMOJI_MERCI);
 };
