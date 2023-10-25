@@ -6,14 +6,4 @@ interface Menu {
     main: Array<string>;
 }
 
-const getDefaultMenu = (date: Moment): Menu => {
-    return {
-        date: date,
-        starter: ["entrées non communiquées"],
-        main: ["plats non communiqués"],
-    };
-};
-
 export default Menu;
-
-export {getDefaultMenu};

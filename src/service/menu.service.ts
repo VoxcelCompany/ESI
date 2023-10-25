@@ -1,6 +1,6 @@
 import MenuRepository from "../repository/menu.repository";
 import * as jsdom from "jsdom";
-import Menu, {getDefaultMenu} from "../models/Menu";
+import Menu from "../models/Menu";
 import {Moment} from "moment-timezone";
 import {getMomentDate} from "../utils/dates";
 import {capitalize} from "../utils/stringManager";
@@ -15,11 +15,13 @@ class MenuService {
 
     public async getDayMenu(date: Moment): Promise<Menu> {
         if (this.crousMenus.length === 0) await this.generateCrousMenus();
-        if (this.crousMenus.length === 0) return getDefaultMenu(date);
+
+        const defaultMenu: Menu = this.getDefaultMenu(date);
+        if (this.crousMenus.length === 0) return defaultMenu;
 
         const dayMenu: Menu = this.crousMenus.find((menu) => menu.date.isSame(date, 'day'));
 
-        return dayMenu ?? getDefaultMenu(date);
+        return dayMenu ?? defaultMenu;
     }
 
     public getMenusDaysNumber(): number {
@@ -57,7 +59,7 @@ class MenuService {
 
     private htmlToMenu(htmlCollection: Element, date: Moment): Menu {
         let dateLunch = htmlCollection.querySelectorAll("ul");
-        let result: Menu = getDefaultMenu(date);
+        let result: Menu = this.getDefaultMenu(date);
 
         try {
             result.starter = this.clearArrayOfMeals(dateLunch[0].innerHTML.split('</li><li>'));
@@ -70,7 +72,7 @@ class MenuService {
             });
 
         } catch (e) {
-            result = getDefaultMenu(date);
+            result = this.getDefaultMenu(date);
         }
 
         return result;
@@ -88,6 +90,15 @@ class MenuService {
         const titleWords: Array<string> = title.split(" ");
         return getMomentDate(titleWords.slice(3).join(" "), "LL");
     }
+
+    private getDefaultMenu(date: Moment): Menu {
+        return {
+            date: date,
+            starter: ["entrées non communiquées"],
+            main: ["plats non communiqués"],
+        };
+    };
+
 }
 
 export default new MenuService();
