@@ -203,7 +203,7 @@ class EnigmaService {
         const channel = client.channels.cache.get(channelId) as BaseGuildTextChannel;
 
         const msg = await channel.send({
-            content: `<a:bell:868901922483097661> <@&${process.env.ROLE_NOTIFIED}>`,
+            content: `<a:bell:868901922483097661> @everyone`,
             embeds: [
                 {
                     title: `Changement${formatedFields.length > 1 ? "s" : ""} dans l'emploi du temps`,
