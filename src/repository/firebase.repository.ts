@@ -1,12 +1,12 @@
 import { firestore } from "firebase-admin";
-import { cert, initializeApp } from "firebase-admin/app";
+import { ServiceAccount, cert, initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import FirestoreCacheValue from "../models/FirestoreCacheValue";
 import { decrypt } from "../utils/crypt";
 import Firestore = firestore.Firestore;
 
 class FirebaseRepository {
-    private credentials: any;
+    private credentials: ServiceAccount;
     private database: Firestore;
     private cache: Map<string, FirestoreCacheValue>;
 
@@ -70,7 +70,7 @@ class FirebaseRepository {
      * Returns null if there's no error, otherwise the error is returned.
      * @param {string} col - Firestore collection name.
      */
-    public async getAllData(col: string): Promise<{ [key: string]: any }> {
+    public async getAllData(col: string): Promise<firestore.DocumentData> {
         const data: { [key: string]: any } = {};
 
         if (this.cache.has(col) && !this.cache.get(col).isPartial) {
@@ -96,7 +96,7 @@ class FirebaseRepository {
      * @param {string} col - Firestore collection name.
      * @param {string} id - Firestore document id.
      */
-    public async getData(col: string, id: string) {
+    public async getData(col: string, id: string): Promise<firestore.DocumentData> {
         if (this.cache.has(col) && this.cache.get(col).data.has(id)) {
             return this.cache.get(col).data.get(id);
         }
