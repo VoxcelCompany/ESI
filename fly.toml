@@ -1,17 +1,17 @@
-# fly.toml app configuration file generated for esidcb on 2023-10-24T16:38:53+02:00
+# fly.toml app configuration file generated for esib on 2023-10-25T11:54:03+02:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "esidcb"
+app = "esib"
 primary_region = "cdg"
 
 [build]
 
 [http_service]
   internal_port = 3000
-  force_https = true
-  auto_stop_machines = true
+  force_https = false
+  auto_stop_machines = false
   auto_start_machines = true
   min_machines_running = 0
   processes = ["app"]
