@@ -1,10 +1,6 @@
-import axios, {AxiosResponse} from "axios";
-import {decrypt} from "../utils/crypt";
+import axios, { AxiosResponse } from "axios";
 import EdtFile from "../models/EdtFile";
-// import * as sha1 from "sha1";
-// import { encrypt, decrypt } from "../tasks/crypter.js";
-// import { getAllData, createData } from "../firebase/firebase.js";
-// import { getMomentDate } from "../tasks/dates.js";
+import { decrypt } from "../utils/crypt";
 
 class EnigmaRepository {
     msRefreshToken: string;
