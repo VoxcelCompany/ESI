@@ -256,7 +256,7 @@ class EnigmaService {
     }
 
     public async getEdtFromDb(cursus: Cursus): Promise<EdtDb> {
-        return (await firebaseRepository.getAllData("edt"))[cursus];
+        return await firebaseRepository.getData("edt", cursus) as EdtDb;
     }
 
     public async getLatestEdt(cursus: Cursus, client: Client): Promise<EdtDb> {
