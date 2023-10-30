@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import EdtFile from "../models/EdtFile";
+import { decrypt } from "../utils/crypt";
 import microsoftRepository from "./microsoft.repository";
 
 class EnigmaRepository {
