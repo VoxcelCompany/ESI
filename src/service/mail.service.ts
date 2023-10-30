@@ -39,7 +39,7 @@ class MailService {
             afternoon: this.data.date == currentDate.date() ? this.data.afternoon : isAfternoon,
         };
 
-        const channel = client.channels.cache.get(process.env.CHNL_GENERAL) as TextChannel;
+        const channel = client.channels.cache.get(process.env.CHNL_SIGN) as TextChannel;
 
         if (channel) {
             await channel.send("📧 N'oubliez pas de signer !");
