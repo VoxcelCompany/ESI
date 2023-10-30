@@ -13,7 +13,7 @@ class EdtDeliveryService {
     async sendEdt(client: Client) {
         const currentDate = getMomentDate();
 
-        if (currentDate.day() !== 0 || currentDate.hours() !== 7 || currentDate.minutes() !== 1) return;
+        if (currentDate.day() !== 0 || currentDate.hours() !== 19 || currentDate.minutes() !== 1) return;
 
         if (this.lastDateSent) {
             const isAlreadySent = this.lastDateSent
@@ -29,7 +29,7 @@ class EdtDeliveryService {
                 const edtDatas = await edtService.getEdtDatas(weekNumber, cursus, client);
                 const messageFields = discordFormatterService.formatEdtCommandFields(edtDatas);
 
-                const messageContent = edtService.getEdtMessageContent(messageFields, +weekNumber, cursus, false);
+                const { data: messageContent, mondayDate: mondayDate } = edtService.getEdtMessageContent(messageFields, +weekNumber, cursus, false);
 
                 let channelId: string;
                 switch (cursus) {
@@ -50,9 +50,9 @@ class EdtDeliveryService {
 
                     message.react(process.env.EMOJI_MERCI);
 
-                    const displayDate = `${WEEK_DAYS[0]} ${currentDate.date()} ${
-                        MONTHS[currentDate.month()]
-                    } ${currentDate.year()}`;
+                    const displayDate = `${WEEK_DAYS[0]} ${mondayDate.date()} ${
+                        MONTHS[mondayDate.month()]
+                    } ${mondayDate.year()}`;
 
                     message.startThread({
                         name: `🗓️ EDT - ${displayDate}`,

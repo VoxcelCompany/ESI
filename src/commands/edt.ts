@@ -1,9 +1,4 @@
-import {
-    CacheType,
-    Client,
-    GuildMember,
-    ModalSubmitInteraction
-} from "discord.js";
+import { CacheType, Client, GuildMember, ModalSubmitInteraction } from "discord.js";
 import discordFormatterService from "../service/discordFormatter.service";
 import edtService from "../service/edt.service";
 import CommandType from "../utils/enum/CommandType";
@@ -37,7 +32,7 @@ export const edt = async (params: EdtParams): Promise<void> => {
     const edtDatas = await edtService.getEdtDatas(+weekNumber, userCursus, client);
     const messageFields = discordFormatterService.formatEdtCommandFields(edtDatas);
 
-    const messageContent = edtService.getEdtMessageContent(messageFields, +weekNumber, userCursus);
+    const { data: messageContent } = edtService.getEdtMessageContent(messageFields, +weekNumber, userCursus);
 
     // Send the message
     await interaction.editReply(messageContent);
