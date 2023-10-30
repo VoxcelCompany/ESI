@@ -1,24 +1,18 @@
-import {
-    ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle,
-    CacheType,
-    ModalSubmitInteraction,
-    SlashCommandBuilder,
-} from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalSubmitInteraction, SlashCommandBuilder } from "discord.js";
 import CommandType from "../utils/enum/CommandType";
 import MenuService from "../service/menu.service";
 import Menu from "../models/Menu";
-import {getMomentDate} from "../utils/dates";
+import { getMomentDate } from "../utils/dates";
+import moment, { Moment } from "moment-timezone";
 
 interface MenuParams {
-    chosenOptionIndex: string;
-    interaction: ModalSubmitInteraction<CacheType>;
+    chosenOption: string;
+    interaction: ModalSubmitInteraction;
     commandType: CommandType;
 }
 
 export const menu = async (params: MenuParams): Promise<any> => {
-    const {chosenOptionIndex, interaction, commandType} = params;
+    const {chosenOption, interaction, commandType} = params;
 
     if (commandType === CommandType.BUTTON) {
         await interaction.deferUpdate();
@@ -26,8 +20,8 @@ export const menu = async (params: MenuParams): Promise<any> => {
         await interaction.deferReply({ephemeral: false});
     }
 
-    const menusDays: Array<string> = await MenuService.getDays();
-    const menu: Menu = await MenuService.getDayMenu(getMomentDate(menusDays[chosenOptionIndex], "dddd D MMMM"));
+    const chosenDate: Moment = getMomentDate(chosenOption, 'L');
+    const menu: Menu = await MenuService.getDayMenu(chosenDate);
 
     // const fields: Array<{name: string, value: string}> = menu.starter
 
@@ -52,10 +46,14 @@ export const menu = async (params: MenuParams): Promise<any> => {
         }],
     };
 
+    const lastMenuDate: Moment = await MenuService.getLastDate();
+    const previousMenuDate: string = moment(chosenDate).subtract(1, 'day').format('L');
+    const nextMenuDate: string = moment(chosenDate).add(1, 'day').format('L');
+
     // Add buttons to message
     const buttonsRow = new ActionRowBuilder().addComponents(
-        new ButtonBuilder().setCustomId(`menu${parseInt(chosenOptionIndex) - 1}`).setLabel("❰❰ ­ Précédent").setStyle(ButtonStyle.Danger).setDisabled(parseInt(chosenOptionIndex) <= 0),
-        new ButtonBuilder().setCustomId(`menu${parseInt(chosenOptionIndex) + 1}`).setLabel("Suivant ­ ❱❱").setStyle(ButtonStyle.Danger).setDisabled(parseInt(chosenOptionIndex) + 1 >= MenuService.getMenusDaysNumber()),
+        new ButtonBuilder().setCustomId(`menu${previousMenuDate}`).setLabel("❰❰ ­ Précédent").setStyle(ButtonStyle.Danger).setDisabled(chosenDate.isSameOrBefore(getMomentDate())),
+        new ButtonBuilder().setCustomId(`menu${nextMenuDate}`).setLabel("Suivant ­ ❱❱").setStyle(ButtonStyle.Danger).setDisabled(chosenDate.isSameOrAfter(lastMenuDate)),
     );
     messageContent["components"] = [buttonsRow];
 
@@ -79,7 +77,7 @@ export const menuSlashCommand = async (): Promise<Omit<SlashCommandBuilder, "add
                 menusDays.forEach((day, index) => {
                     option = option.addChoices({
                         name: day,
-                        value: `${index}`,
+                        value: getMomentDate(day, "dddd D MMMM").format('L'),
                     });
                 });
 
