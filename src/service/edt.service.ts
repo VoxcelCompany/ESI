@@ -1,19 +1,19 @@
 import {
     ActionRowBuilder,
-    AnyComponentBuilder,
     ButtonBuilder,
     ButtonStyle,
     Client,
     GuildMember,
     InteractionEditReplyOptions,
-    MessagePayload,
+    MessagePayload
 } from "discord.js";
+import { Moment } from "moment";
 import { EdtDataCmd } from "../models/EdtDataCmd";
 import { WEEK_DAYS } from "../utils/constants/Dates";
 import { getCustomizedDate, getMomentDate } from "../utils/dates";
 import Cursus from "../utils/enum/Cursus";
-import enigmaService from "./enigma.service";
 import { capitalize } from "../utils/stringManager";
+import enigmaService from "./enigma.service";
 
 class EdtService {
     public getUserCursus(
@@ -128,7 +128,7 @@ class EdtService {
         weekNumber: number,
         userCursus: Cursus,
         showButtons: boolean = true
-    ): MessagePayload | InteractionEditReplyOptions {
+    ): { mondayDate: Moment; data: MessagePayload | InteractionEditReplyOptions } {
         const weekDate = getCustomizedDate(+weekNumber - 1);
         const displayDate = weekDate.format("DD/MM/YYYY");
         const diplayWeek = {
@@ -151,7 +151,11 @@ class EdtService {
             ],
         };
 
-        if (!showButtons) return messageContent;
+        if (!showButtons)
+            return {
+                mondayDate: weekDate,
+                data: messageContent,
+            };
 
         const buttonsRow = new ActionRowBuilder().addComponents(
             new ButtonBuilder()
@@ -171,7 +175,10 @@ class EdtService {
         );
         (messageContent as InteractionEditReplyOptions).components = [buttonsRow as any];
 
-        return messageContent;
+        return {
+            mondayDate: weekDate,
+            data: messageContent,
+        };
     }
 }
 
