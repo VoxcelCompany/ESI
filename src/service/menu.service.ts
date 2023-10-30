@@ -1,9 +1,9 @@
 import MenuRepository from "../repository/menu.repository";
 import * as jsdom from "jsdom";
 import Menu from "../models/Menu";
-import {Moment} from "moment-timezone";
-import {getMomentDate} from "../utils/dates";
-import {capitalize} from "../utils/stringManager";
+import { Moment } from "moment-timezone";
+import { getMomentDate } from "../utils/dates";
+import { capitalize } from "../utils/stringManager";
 
 class MenuService {
     private crousMenus: Array<Menu> = [];
@@ -11,6 +11,13 @@ class MenuService {
     public async getDays(format: string = "dddd D MMMM"): Promise<Array<string>> {
         if (this.crousMenus.length === 0) await this.generateCrousMenus();
         return this.crousMenus.map((menu) => capitalize(menu.date.format(format)));
+    }
+
+    public async getLastDate(): Promise<Moment> {
+        if (this.crousMenus.length === 0) await this.generateCrousMenus();
+        if (this.crousMenus.length === 0) return getMomentDate();
+
+        return this.crousMenus[this.crousMenus.length - 1].date;
     }
 
     public async getDayMenu(date: Moment): Promise<Menu> {
@@ -22,10 +29,6 @@ class MenuService {
         const dayMenu: Menu = this.crousMenus.find((menu) => menu.date.isSame(date, 'day'));
 
         return dayMenu ?? defaultMenu;
-    }
-
-    public getMenusDaysNumber(): number {
-        return this.crousMenus.length;
     }
 
     public async generateCrousMenus(): Promise<void> {

@@ -53,13 +53,13 @@ export default async (
                 return;
             case /^menu$/.test(commandName):
                 return await menu({
-                    chosenOptionIndex: interaction.options.get('jour').value,
+                    chosenOption: interaction.options.get('jour').value,
                     interaction: interaction,
                     commandType: commandType,
                 });
-            case /^menu[0-9]+$/.test(commandName):
+            case /^menu\d{2}\/\d{2}\/\d{4}$/.test(commandName):
                 return await menu({
-                    chosenOptionIndex: commandName.replace('menu', ''),
+                    chosenOption: commandName.replace('menu', ''),
                     interaction: interaction,
                     commandType: commandType,
                 });
