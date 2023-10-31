@@ -13,7 +13,6 @@ export default async (): Promise<Omit<SlashCommandBuilder, "addSubcommand" | "ad
                     .setRequired(true);
 
                 menusDays.forEach((day) => {
-                    console.log(day);
                     option = option.addChoices({
                         name: day,
                         value: getMomentDate(day, "dddd D MMMM").format('L'),
