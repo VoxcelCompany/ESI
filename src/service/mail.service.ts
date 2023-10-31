@@ -37,8 +37,8 @@ class MailService {
 
         this.data = {
             date: currentDate.date(),
-            morning: this.data.date == currentDate.date() ? this.data.morning : isMorning,
-            afternoon: this.data.date == currentDate.date() ? this.data.afternoon : isAfternoon,
+            morning: isMorning,
+            afternoon: isAfternoon,
         };
 
         const channel = client.channels.cache.get(process.env.CHNL_SIGN) as TextChannel;
