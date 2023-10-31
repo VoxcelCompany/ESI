@@ -47,6 +47,22 @@ class SlashCommands {
         }
     }
 
+    public async deleteSlashCommand(commandName: string): Promise<void> {
+        await this.deleteSlashCommandsByGuild(commandName, process.env.GLD_ADMIN);
+        if (process.env.NODE_ENV !== "development") {
+            await this.deleteSlashCommandsByGuild(commandName, process.env.GLD_ENIGMA);
+        }
+    }
+
+    private async deleteSlashCommandsByGuild(commandName: string, guildId: string): Promise<void> {
+        const commands = await this.client.guilds.cache.get(guildId).commands.fetch();
+        const command = commands.find(command => command.name === commandName);
+
+        if (command) {
+            await command.delete();
+        }
+    }
+
     private async getCommands(guildId: string): Promise<Array<SlashCommandBuilder | any>> {
         const commands: Array<SlashCommandBuilder | any> = [];
 
@@ -158,58 +174,58 @@ class SlashCommands {
 
         if (guildId != process.env.GLD_ADMIN) {
             // PUBLIC COMMANDS
-            commands.push(
-                new SlashCommandBuilder()
-                    .setName("devoirs")
-                    .setDescription("Gestion des devoirs")
-                    .addSubcommand((subcommand) =>
-                        subcommand.setName("afficher").setDescription("Affiche les devoirs actuels"),
-                    )
-                    .addSubcommand((subcommand) =>
-                        subcommand
-                            .setName("ajouter")
-                            .setDescription("Demande l'ajout d'un nouveau devoir")
-                            .addStringOption((option) =>
-                                option.setName("date").setDescription("Date au format JJ/MM/AAAA").setRequired(true),
-                            )
-                            .addStringOption((option) =>
-                                option.setName("matiere").setDescription("Nom de la matière concernée").setRequired(true),
-                            )
-                            .addStringOption((option) =>
-                                option
-                                    .setName("description")
-                                    .setDescription("Détails du devoir à effectuer")
-                                    .setRequired(true),
-                            ),
-                    ),
-            );
+            // commands.push(
+            //     new SlashCommandBuilder()
+            //         .setName("devoirs")
+            //         .setDescription("Gestion des devoirs")
+            //         .addSubcommand((subcommand) =>
+            //             subcommand.setName("afficher").setDescription("Affiche les devoirs actuels"),
+            //         )
+            //         .addSubcommand((subcommand) =>
+            //             subcommand
+            //                 .setName("ajouter")
+            //                 .setDescription("Demande l'ajout d'un nouveau devoir")
+            //                 .addStringOption((option) =>
+            //                     option.setName("date").setDescription("Date au format JJ/MM/AAAA").setRequired(true),
+            //                 )
+            //                 .addStringOption((option) =>
+            //                     option.setName("matiere").setDescription("Nom de la matière concernée").setRequired(true),
+            //                 )
+            //                 .addStringOption((option) =>
+            //                     option
+            //                         .setName("description")
+            //                         .setDescription("Détails du devoir à effectuer")
+            //                         .setRequired(true),
+            //                 ),
+            //         ),
+            // );
         } else {
             // PRIVATE COMMANDS
-            commands.push(
-                new SlashCommandBuilder()
-                    .setName("devoirs")
-                    .setDescription("Gestion des devoirs")
-                    .addSubcommand((subcommand) =>
-                        subcommand.setName("afficher").setDescription("Affiche les devoirs actuels"),
-                    )
-                    .addSubcommand((subcommand) =>
-                        subcommand
-                            .setName("ajouter")
-                            .setDescription("Demande l'ajout d'un nouveau devoir")
-                            .addStringOption((option) =>
-                                option.setName("date").setDescription("Date au format JJ/MM/AAAA").setRequired(true),
-                            )
-                            .addStringOption((option) =>
-                                option.setName("matiere").setDescription("Nom de la matière concernée").setRequired(true),
-                            )
-                            .addStringOption((option) =>
-                                option
-                                    .setName("description")
-                                    .setDescription("Détails du devoir à effectuer")
-                                    .setRequired(true),
-                            ),
-                    ),
-            );
+            // commands.push(
+            //     new SlashCommandBuilder()
+            //         .setName("devoirs")
+            //         .setDescription("Gestion des devoirs")
+            //         .addSubcommand((subcommand) =>
+            //             subcommand.setName("afficher").setDescription("Affiche les devoirs actuels"),
+            //         )
+            //         .addSubcommand((subcommand) =>
+            //             subcommand
+            //                 .setName("ajouter")
+            //                 .setDescription("Demande l'ajout d'un nouveau devoir")
+            //                 .addStringOption((option) =>
+            //                     option.setName("date").setDescription("Date au format JJ/MM/AAAA").setRequired(true),
+            //                 )
+            //                 .addStringOption((option) =>
+            //                     option.setName("matiere").setDescription("Nom de la matière concernée").setRequired(true),
+            //                 )
+            //                 .addStringOption((option) =>
+            //                     option
+            //                         .setName("description")
+            //                         .setDescription("Détails du devoir à effectuer")
+            //                         .setRequired(true),
+            //                 ),
+            //         ),
+            // );
 
             commands.push(
                 new SlashCommandBuilder()
