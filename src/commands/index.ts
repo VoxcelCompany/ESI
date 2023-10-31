@@ -7,7 +7,7 @@ import { info } from "./info";
 import { say } from "./private/say";
 import { wifi } from "./wifi";
 import { osi } from "./osi";
-import {menu} from "./menu";
+import menu from "./actions/menu.action";
 
 export default async (
     interaction: any | Interaction<CacheType> | ModalSubmitInteraction<CacheType>,

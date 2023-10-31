@@ -1,8 +1,8 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalSubmitInteraction, SlashCommandBuilder } from "discord.js";
-import CommandType from "../utils/enum/CommandType";
-import MenuService from "../service/menu.service";
-import Menu from "../models/Menu";
-import { getMomentDate } from "../utils/dates";
+import CommandType from "../../utils/enum/CommandType";
+import MenuService from "../../service/menu.service";
+import Menu from "../../models/Menu";
+import { getMomentDate } from "../../utils/dates";
 import moment, { Moment } from "moment-timezone";
 
 interface MenuParams {
@@ -11,7 +11,7 @@ interface MenuParams {
     commandType: CommandType;
 }
 
-export const menu = async (params: MenuParams): Promise<any> => {
+export default async (params: MenuParams): Promise<any> => {
     const {chosenOption, interaction, commandType} = params;
 
     if (commandType === CommandType.BUTTON) {
@@ -62,26 +62,4 @@ export const menu = async (params: MenuParams): Promise<any> => {
 
     // Add reactions to the message
     await (await interaction.fetchReply()).react(process.env.EMOJI_MERCI);
-};
-
-export const menuSlashCommand = async (): Promise<Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">> => {
-    const menusDays: Array<string> = await MenuService.getDays();
-    return new SlashCommandBuilder()
-        .setName('menu')
-        .setDescription('Affiche le menu du jour sélectionné')
-        .addStringOption(option => {
-                option = option.setName('jour')
-                    .setDescription('Jour concerné')
-                    .setRequired(true);
-
-                menusDays.forEach((day, index) => {
-                    option = option.addChoices({
-                        name: day,
-                        value: getMomentDate(day, "dddd D MMMM").format('L'),
-                    });
-                });
-
-                return option;
-            },
-        );
 };
