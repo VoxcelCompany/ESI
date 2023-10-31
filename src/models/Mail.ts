@@ -1,5 +1,5 @@
 export default interface Mail {
-  createdDateTime: string;
+  receivedDateTime: string;
   subject: string;
   bodyPreview: string;
   sender: {

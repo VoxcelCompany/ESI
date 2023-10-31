@@ -24,12 +24,14 @@ class MailService {
             return;
 
         const lastMail = await mailRepository.getLastMailFrom("noreply@sowesign.net");
-        const mailDate = getMomentDate(lastMail.createdDateTime);
+        if (!lastMail) return;
+
+        const mailDate = getMomentDate(lastMail.receivedDateTime);
 
         if (
             mailDate.date() != currentDate.date() ||
-            (isMorning && mailDate.hour() < 12) ||
-            (isAfternoon && mailDate.hour() > 14)
+            (isMorning && mailDate.hour() > 13) ||
+            (isAfternoon && mailDate.hour() < 14)
         )
             return;
 

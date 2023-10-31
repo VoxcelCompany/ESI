@@ -3,7 +3,7 @@ import Mail from "../models/Mail";
 import microsoftRepository from "./microsoft.repository";
 
 class MailRepository {
-    public async getLastMailFrom(email: string): Promise<Mail> {
+    public async getLastMailFrom(email: string): Promise<Mail | null> {
         const response = await axios.get("https://graph.microsoft.com/v1.0/me/mailfolders/inbox/messages", {
             headers: {
                 Authorization: `Bearer ${await microsoftRepository.getAccessToken()}`,
@@ -18,7 +18,8 @@ class MailRepository {
             return new Date(b.receivedDateTime).getTime() - new Date(a.receivedDateTime).getTime();
         });
 
-        return orderedMails[0];
+
+        return orderedMails[0] ?? null;
     }
 }
 
