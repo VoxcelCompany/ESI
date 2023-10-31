@@ -3,7 +3,6 @@ import { Cron } from "../models/Cron";
 import EnigmaService from "./enigma.service";
 import edtDeliveryService from "./edtDelivery.service";
 import MenuService from "./menu.service";
-import mailService from "./mail.service";
 
 class SchedulerService {
     private client: Client;
@@ -23,11 +22,6 @@ class SchedulerService {
             timer: 18000000,
             launchOnStart: false
         },
-        {
-            callback: () => mailService.sendMailWarning(this.client),
-            timer: 60000,
-            launchOnStart: true
-        }
     ];
 
     public setClient(client: Client): this {
