@@ -26,9 +26,9 @@ class MailService {
         const isMorning =
             (currentDate.hour() == 9 && currentDate.minute() >= 30) ||
             (currentDate.hour() > 9 && currentDate.hour() <= 13);
-        const isAfternoon = currentDate.hour() >= 14 && currentDate.hour() <= 17;
-
-        console.log(isMorning, isAfternoon);
+        const isAfternoon =
+            (currentDate.hour() >= 14 && currentDate.hour() <= 17) ||
+            (currentDate.hour() == 17 && currentDate.minute() <= 30);
 
         if (
             (!isMorning && !isAfternoon) ||
@@ -67,12 +67,8 @@ class MailService {
 
         for (const cursus of CURSUS) {
             const edt = await enigmaService.getLatestEdt(cursus, this.client);
-            console.log(edt.datas[courseDate]);
-            if (
-                edt &&
-                edt.datas[courseDate] &&
-                (edt.datas[courseDate].morning !== false || edt.datas[courseDate].afternoon !== false)
-            ) {
+
+            if (edt && edt.datas[courseDate] && (edt.datas[courseDate].morning || edt.datas[courseDate].afternoon)) {
                 isCourseToday = true;
                 break;
             }
