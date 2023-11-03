@@ -7,6 +7,7 @@ import EdtFile from "../models/EdtFile";
 import EnigmaRepository from "../repository/enigma.repository";
 import firebaseRepository from "../repository/firebase.repository";
 import { CURSUS } from "../utils/constants/Cursus";
+import EDT_DB_DATE_FORMAT from "../utils/constants/EdtDbDateFormat";
 import { getMomentDate } from "../utils/dates";
 import Cursus from "../utils/enum/Cursus";
 import { capitalize } from "../utils/stringManager";
@@ -84,7 +85,7 @@ class EnigmaService {
                     rowInfos[fieldName] =
                         fieldName === "date"
                             ? getMomentDate(new Date((value - 2) * 24 * 3600 * 1000 + Date.parse("1900-01-01"))).format(
-                                  "YYYY-MM-DD"
+                                  EDT_DB_DATE_FORMAT
                               )
                             : value;
                 }
@@ -144,7 +145,7 @@ class EnigmaService {
         const today = getMomentDate(new Date()).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
 
         for (const date in newEdt) {
-            if (getMomentDate(date, "YYYY-MM-DD").isBefore(today)) continue;
+            if (getMomentDate(date, EDT_DB_DATE_FORMAT).isBefore(today)) continue;
 
             const isSameMorningCourse = newEdt[date].morning === oldEdt.datas[date].morning;
             const isSameAfternoonCourse = newEdt[date].afternoon === oldEdt.datas[date].afternoon;
@@ -256,7 +257,7 @@ class EnigmaService {
     }
 
     public async getEdtFromDb(cursus: Cursus): Promise<EdtDb> {
-        return await firebaseRepository.getData("edt", cursus) as EdtDb;
+        return (await firebaseRepository.getData("edt", cursus)) as EdtDb;
     }
 
     public async getLatestEdt(cursus: Cursus, client: Client): Promise<EdtDb> {

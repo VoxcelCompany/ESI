@@ -1,12 +1,12 @@
 import { Client } from "discord.js";
-import { Cron } from "../models/Cron";
-import EnigmaService from "./enigma.service";
-import edtDeliveryService from "./edtDelivery.service";
-import MenuService from "./menu.service";
-import mailService from "./mail.service";
 import SlashCommands from "../commands/slashCommands";
 import MenuSlashCommand from "../commands/slashCommands/menu.slashCommand";
+import { Cron } from "../models/Cron";
 import { getMomentDate } from "../utils/dates";
+import edtDeliveryService from "./edtDelivery.service";
+import EnigmaService from "./enigma.service";
+import mailService from "./mail.service";
+import MenuService from "./menu.service";
 
 class SchedulerService {
     private client: Client;
@@ -15,31 +15,36 @@ class SchedulerService {
             callback: () => EnigmaService.checkEdtUpdate(this.client),
             timer: 1800000,
             launchOnStart: true,
+            enabled: true,
         },
         {
             callback: () => edtDeliveryService.sendEdt(this.client),
             timer: 59000,
             launchOnStart: true,
+            enabled: true,
         },
         {
             callback: () => MenuService.generateCrousMenus(),
             timer: 18000000,
             launchOnStart: false,
+            enabled: true,
         },
         {
             callback: () => mailService.sendMailWarning(this.client),
             timer: 60000,
             launchOnStart: true,
+            enabled: process.env.NODE_ENV !== "development",
         },
         {
             callback: async () => {
-                if (MenuSlashCommand.currentDate.isBefore(getMomentDate(), 'date')) {
-                    SlashCommands.updateSlashCommand('menu', await MenuSlashCommand.getSlashCommand());
+                if (MenuSlashCommand.currentDate.isBefore(getMomentDate(), "date")) {
+                    SlashCommands.updateSlashCommand("menu", await MenuSlashCommand.getSlashCommand());
                     MenuSlashCommand.currentDate = getMomentDate();
                 }
             },
             timer: 60000,
             launchOnStart: false,
+            enabled: true,
         },
     ];
 
@@ -53,6 +58,8 @@ class SchedulerService {
 
     private launchCrons(): void {
         this.crons.forEach((cron) => {
+            if (!cron.enabled) return;
+
             if (cron.launchOnStart) cron.callback();
 
             setInterval(() => {

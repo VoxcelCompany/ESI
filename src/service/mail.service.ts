@@ -1,9 +1,14 @@
 import { Client, TextChannel } from "discord.js";
 import MailServiceData from "../models/MailServiceData";
 import mailRepository from "../repository/mail.repository";
+import { CURSUS } from "../utils/constants/Cursus";
+import EDT_DB_DATE_FORMAT from "../utils/constants/EdtDbDateFormat";
 import { getMomentDate } from "../utils/dates";
+import enigmaService from "./enigma.service";
 
 class MailService {
+    private client: Client;
+
     private data: MailServiceData = {
         date: 0,
         morning: false,
@@ -11,10 +16,19 @@ class MailService {
     };
 
     async sendMailWarning(client: Client): Promise<void> {
+        if (!this.client) this.client = client;
+
         const currentDate = getMomentDate();
 
-        const isMorning = currentDate.hour() < 12 || (currentDate.hour() == 12 && currentDate.minute() < 30);
-        const isAfternoon = currentDate.hour() > 14 || (currentDate.hour() == 14 && currentDate.minute() >= 0);
+        const isCourseToday = await this.isCourseToday(currentDate.format(EDT_DB_DATE_FORMAT));
+        if (!isCourseToday) return;
+
+        const isMorning =
+            (currentDate.hour() == 9 && currentDate.minute() >= 30) ||
+            (currentDate.hour() > 9 && currentDate.hour() <= 13);
+        const isAfternoon =
+            (currentDate.hour() >= 14 && currentDate.hour() <= 17) ||
+            (currentDate.hour() == 17 && currentDate.minute() <= 30);
 
         if (
             (!isMorning && !isAfternoon) ||
@@ -46,6 +60,21 @@ class MailService {
         if (channel) {
             await channel.send("📧 N'oubliez pas de signer !");
         }
+    }
+
+    private async isCourseToday(courseDate: string): Promise<boolean> {
+        let isCourseToday = false;
+
+        for (const cursus of CURSUS) {
+            const edt = await enigmaService.getLatestEdt(cursus, this.client);
+
+            if (edt && edt.datas[courseDate] && (edt.datas[courseDate].morning || edt.datas[courseDate].afternoon)) {
+                isCourseToday = true;
+                break;
+            }
+        }
+
+        return isCourseToday;
     }
 }
 
