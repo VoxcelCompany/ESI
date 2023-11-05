@@ -172,75 +172,23 @@ class SlashCommands {
                 ),
         );
 
-        if (guildId != process.env.GLD_ADMIN) {
-            // PUBLIC COMMANDS
-            // commands.push(
-            //     new SlashCommandBuilder()
-            //         .setName("devoirs")
-            //         .setDescription("Gestion des devoirs")
-            //         .addSubcommand((subcommand) =>
-            //             subcommand.setName("afficher").setDescription("Affiche les devoirs actuels"),
-            //         )
-            //         .addSubcommand((subcommand) =>
-            //             subcommand
-            //                 .setName("ajouter")
-            //                 .setDescription("Demande l'ajout d'un nouveau devoir")
-            //                 .addStringOption((option) =>
-            //                     option.setName("date").setDescription("Date au format JJ/MM/AAAA").setRequired(true),
-            //                 )
-            //                 .addStringOption((option) =>
-            //                     option.setName("matiere").setDescription("Nom de la matière concernée").setRequired(true),
-            //                 )
-            //                 .addStringOption((option) =>
-            //                     option
-            //                         .setName("description")
-            //                         .setDescription("Détails du devoir à effectuer")
-            //                         .setRequired(true),
-            //                 ),
-            //         ),
-            // );
-        } else {
-            // PRIVATE COMMANDS
-            // commands.push(
-            //     new SlashCommandBuilder()
-            //         .setName("devoirs")
-            //         .setDescription("Gestion des devoirs")
-            //         .addSubcommand((subcommand) =>
-            //             subcommand.setName("afficher").setDescription("Affiche les devoirs actuels"),
-            //         )
-            //         .addSubcommand((subcommand) =>
-            //             subcommand
-            //                 .setName("ajouter")
-            //                 .setDescription("Demande l'ajout d'un nouveau devoir")
-            //                 .addStringOption((option) =>
-            //                     option.setName("date").setDescription("Date au format JJ/MM/AAAA").setRequired(true),
-            //                 )
-            //                 .addStringOption((option) =>
-            //                     option.setName("matiere").setDescription("Nom de la matière concernée").setRequired(true),
-            //                 )
-            //                 .addStringOption((option) =>
-            //                     option
-            //                         .setName("description")
-            //                         .setDescription("Détails du devoir à effectuer")
-            //                         .setRequired(true),
-            //                 ),
-            //         ),
-            // );
+        if (guildId != process.env.GLD_ADMIN) return commands;
 
-            commands.push(
-                new SlashCommandBuilder()
-                    .setName("say")
-                    .setDescription("Envoie un message dans un salon choisi")
-                    .addChannelOption((option) =>
-                        option.setName("channel").setDescription("Salon où envoyer le message").setRequired(true),
-                    )
-                    .addStringOption((option) =>
-                        option.setName("message").setDescription("Message à envoyer").setRequired(true),
-                    ),
-            );
+        // PRIVATE COMMANDS
 
-            return commands;
-        }
+        commands.push(
+            new SlashCommandBuilder()
+                .setName("say")
+                .setDescription("Envoie un message dans un salon choisi")
+                .addChannelOption((option) =>
+                    option.setName("channel").setDescription("Salon où envoyer le message").setRequired(true),
+                )
+                .addStringOption((option) =>
+                    option.setName("message").setDescription("Message à envoyer").setRequired(true),
+                ),
+        );
+
+        return commands;
     }
 }
 
