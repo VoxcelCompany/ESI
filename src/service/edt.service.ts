@@ -5,7 +5,7 @@ import {
     Client,
     GuildMember,
     InteractionEditReplyOptions,
-    MessagePayload
+    MessagePayload,
 } from "discord.js";
 import { Moment } from "moment";
 import { EdtDataCmd } from "../models/EdtDataCmd";
@@ -130,19 +130,19 @@ class EdtService {
         showButtons: boolean = true
     ): { mondayDate: Moment; data: MessagePayload | InteractionEditReplyOptions } {
         const weekDate = getCustomizedDate(+weekNumber - 1);
-        const displayDate = weekDate.format("DD/MM/YYYY");
+        const displayDate = weekDate.format("LL");
         const diplayWeek = {
             "1": "Cette semaine",
             "2": "Semaine prochaine",
         };
 
         const messageContent = {
+            content: `[🗓️ **__${
+                diplayWeek[weekNumber] !== undefined ? diplayWeek[weekNumber] : `Dans ${weekNumber} semaines`
+            }__ ↔ ${displayDate}**](${userCursus == Cursus.CYBER ? process.env.LINK_CYBER : process.env.LINK_RETAIL}) `,
             embeds: [
                 {
                     color: 0xff0000,
-                    title: `🗓️ **__${
-                        diplayWeek[weekNumber] !== undefined ? diplayWeek[weekNumber] : `Dans ${weekNumber} semaines`
-                    }__ ↔ ${displayDate}** `,
                     fields: messageFields,
                     footer: {
                         text: `ENIGMA - ${capitalize(userCursus)}`,
@@ -163,10 +163,14 @@ class EdtService {
                 .setLabel("❰❰ ­ Précédent")
                 .setStyle(ButtonStyle.Danger)
                 .setDisabled(weekNumber <= 1),
+            // new ButtonBuilder()
+            //     .setLabel("Détails")
+            //     .setStyle(ButtonStyle.Link)
+            //     .setURL(userCursus == Cursus.CYBER ? process.env.LINK_CYBER : process.env.LINK_RETAIL),
             new ButtonBuilder()
-                .setLabel("Détails")
-                .setStyle(ButtonStyle.Link)
-                .setURL(userCursus == Cursus.CYBER ? process.env.LINK_CYBER : process.env.LINK_RETAIL),
+                .setCustomId(`icsDownload-${userCursus}`)
+                .setLabel("⇓ ­ Télécharger")
+                .setStyle(ButtonStyle.Secondary),
             new ButtonBuilder()
                 .setCustomId(`EDT${weekNumber + 1}`)
                 .setLabel("Suivant ­ ❱❱")
