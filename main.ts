@@ -42,7 +42,6 @@ client.on(Events.ClientReady, () => {
     SlashCommands.setClient(client);
 
     SlashCommands.setSlashCommands();
-    SlashCommands.deleteSlashCommand('devoirs');
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
