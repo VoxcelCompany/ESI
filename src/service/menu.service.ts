@@ -40,7 +40,10 @@ class MenuService {
         const newCrousMenus: Array<Menu> = [];
 
         menusTitles.forEach((title: string, index: number) => {
-            newCrousMenus.push(this.htmlToMenu(menusMeals[index], this.crousMenuTitleToDate(title)));
+            const dayMenu: Menu = this.htmlToMenu(menusMeals[index], this.crousMenuTitleToDate(title));
+            if (dayMenu.date.isBefore(getMomentDate(), 'date')) return;
+
+            newCrousMenus.push(dayMenu);
         });
 
         this.crousMenus = newCrousMenus;

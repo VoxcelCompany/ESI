@@ -2,7 +2,7 @@ require("dotenv").config();
 import { ActivityType, Client, Events, GatewayIntentBits, Partials, PresenceStatusData, TextChannel } from "discord.js";
 import packageConfig from "./package.json";
 import interactionLaunch, { messageReceived } from "./src/commands";
-import { setSlashCommands } from "./src/commands/setSlashCommands";
+import SlashCommands from "./src/commands/slashCommands";
 import schedulerService from "./src/service/scheduler.service";
 
 const client = new Client({
@@ -39,11 +39,10 @@ client.on(Events.ClientReady, () => {
     });
 
     schedulerService.setClient(client);
+    SlashCommands.setClient(client);
 
-    setSlashCommands(process.env.GLD_ADMIN, client);
-    if (process.env.NODE_ENV !== "development") {
-        setSlashCommands(process.env.GLD_ENIGMA, client);
-    }
+    SlashCommands.setSlashCommands();
+    SlashCommands.deleteSlashCommand('devoirs');
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -64,7 +63,7 @@ client.on(Events.MessageReactionRemove, (reaction, user) => {
 });
 
 client.on(Events.GuildCreate, (guild) => {
-    if (authServers.includes(guild.id)) setSlashCommands(guild.id, client);
+    if (authServers.includes(guild.id)) SlashCommands.setSlashCommandsByGuild(guild.id);
 });
 
 process.on("uncaughtException", function (err) {
