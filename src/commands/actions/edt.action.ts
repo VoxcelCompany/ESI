@@ -1,7 +1,7 @@
 import { CacheType, Client, GuildMember, ModalSubmitInteraction } from "discord.js";
-import discordFormatterService from "../service/discordFormatter.service";
-import edtService from "../service/edt.service";
-import CommandType from "../utils/enum/CommandType";
+import discordFormatterService from "../../service/discordFormatter.service";
+import edtService from "../../service/edt.service";
+import CommandType from "../../utils/enum/CommandType";
 
 interface EdtParams {
     weekNumber: string;
@@ -11,7 +11,7 @@ interface EdtParams {
     client: Client;
 }
 
-export const edt = async (params: EdtParams): Promise<void> => {
+export default async (params: EdtParams): Promise<void> => {
     const { weekNumber, typeNumber, interaction, type, client } = params;
 
     if (type == CommandType.BUTTON) {

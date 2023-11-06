@@ -12,6 +12,7 @@ import { getMomentDate } from "../utils/dates";
 import Cursus from "../utils/enum/Cursus";
 import { capitalize } from "../utils/stringManager";
 import DiscordFormatterService from "./discordFormatter.service";
+import EdtIcsService from "./edtIcs.service";
 
 class EnigmaService {
     public async getEdtFileDataFromApi(cursus: Cursus): Promise<EdtFile> {
@@ -101,12 +102,17 @@ class EnigmaService {
 
         if (saveToDb) {
             this.getEdtFileDataFromApi(cursus).then((infos) => {
-                const edtDb: EdtDb = {
+                const edtDb: Omit<EdtDb, "icsDatas"> = {
                     ...infos,
                     datas: edtDatas,
                 };
 
-                firebaseRepository.createData("edt", cursus, edtDb);
+                const icsDatas = EdtIcsService.generateIcsFile(edtDb, cursus);
+
+                firebaseRepository.createData("edt", cursus, {
+                    ...edtDb,
+                    icsDatas,
+                });
             });
         }
 
@@ -267,9 +273,16 @@ class EnigmaService {
         if (!edtDbDatas.lastModifiedDateTime) {
             const edtDatas = await this.getEdtFromApi(cursus, true);
 
-            return {
+            const edtDbWithoutIcs: Omit<EdtDb, "icsDatas"> = {
                 ...edtFileDatas,
                 datas: edtDatas,
+            };
+
+            const icsDatas = EdtIcsService.generateIcsFile(edtDbWithoutIcs, cursus);
+
+            return {
+                ...edtDbWithoutIcs,
+                icsDatas,
             };
         }
 
@@ -284,9 +297,16 @@ class EnigmaService {
             this.alertEdtUpdate(client, cursus, r);
         });
 
-        return {
+        const edtDbWithoutIcs: Omit<EdtDb, "icsDatas"> = {
             ...edtFileDatas,
             datas: edtDatas,
+        };
+
+        const icsDatas = EdtIcsService.generateIcsFile(edtDbWithoutIcs, cursus);
+
+        return {
+            ...edtDbWithoutIcs,
+            icsDatas,
         };
     }
 }
