@@ -1,7 +1,7 @@
 import { CacheType, Client, Interaction, Message, ModalSubmitInteraction, TextChannel } from "discord.js";
 import { ADMIN_USERS } from "../utils/constants/Admin";
 import CommandType from "../utils/enum/CommandType";
-import ics from "./actions/edtics.action";
+import edtIcs from "./actions/edtIcs.action";
 import menu from "./actions/menu.action";
 import { aide } from "./aide";
 import { edt } from "./edt";
@@ -65,7 +65,7 @@ export default async (
                     commandType: commandType,
                 });
             case /^icsdownload-(cyber|retail)$/.test(commandName):
-                await ics({
+                await edtIcs({
                     cursus: commandName.replace("icsdownload-", ""),
                     interaction: interaction,
                     type: commandType,
@@ -73,7 +73,7 @@ export default async (
                 return;
 
             case /^download$/.test(commandName):
-                await ics({
+                await edtIcs({
                     cursus: interaction.options.get("cursus")?.value,
                     interaction: interaction,
                     type: commandType,

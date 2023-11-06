@@ -12,7 +12,7 @@ import { getMomentDate } from "../utils/dates";
 import Cursus from "../utils/enum/Cursus";
 import { capitalize } from "../utils/stringManager";
 import DiscordFormatterService from "./discordFormatter.service";
-import EdtIcsService from "./edtics.service";
+import EdtIcsService from "./edtIcs.service";
 
 class EnigmaService {
     public async getEdtFileDataFromApi(cursus: Cursus): Promise<EdtFile> {

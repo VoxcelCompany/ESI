@@ -1,6 +1,6 @@
 import { CacheType, GuildMember, InteractionReplyOptions, ModalSubmitInteraction } from "discord.js";
 import edtService from "../../service/edt.service";
-import EdtIcsService from "../../service/edtics.service";
+import EdtIcsService from "../../service/edtIcs.service";
 import { CURSUS } from "../../utils/constants/Cursus";
 import CommandType from "../../utils/enum/CommandType";
 import Cursus from "../../utils/enum/Cursus";
@@ -22,7 +22,7 @@ export default async (params: IcsParams): Promise<void> => {
     let selectedCursus: Cursus;
 
     if (cursus) {
-        selectedCursus = type == CommandType.BUTTON ? (cursus.toUpperCase() as Cursus) : CURSUS[+cursus - 1];
+        selectedCursus = type === CommandType.BUTTON ? (cursus.toUpperCase() as Cursus) : CURSUS[+cursus - 1];
     } else {
         const userCursusRes = edtService.getUserCursus(interaction.member as GuildMember);
 
