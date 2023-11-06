@@ -28,6 +28,7 @@
     "file-system": "^1.2.2",
     "firebase-admin": "^11.11.0",
     "http": "^0.0.1-security",
+    "ics": "^3.5.0",
     "jsdom": "^22.1.0",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.43",

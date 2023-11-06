@@ -3,6 +3,7 @@ import { ADMIN_USERS } from "../utils/constants/Admin";
 import CommandType from "../utils/enum/CommandType";
 import aide from "./actions/aide.action";
 import edt from "./actions/edt.action";
+import edtIcs from "./actions/edtIcs.action";
 import info from "./actions/info.action";
 import menu from "./actions/menu.action";
 import osi from "./actions/osi.action";
@@ -63,6 +64,21 @@ export default async (
                     chosenOption: commandName.replace("menu", ""),
                     interaction: interaction,
                     commandType: commandType,
+                });
+                return;
+            case /^icsdownload-(cyber|retail)$/.test(commandName):
+                await edtIcs({
+                    cursus: commandName.replace("icsdownload-", ""),
+                    interaction: interaction,
+                    type: commandType,
+                });
+                return;
+
+            case /^download$/.test(commandName):
+                await edtIcs({
+                    cursus: interaction.options.get("cursus")?.value,
+                    interaction: interaction,
+                    type: commandType,
                 });
                 return;
             // admin commands

@@ -1,4 +1,5 @@
 import { ApplicationCommandData, Client, SlashCommandBuilder } from "discord.js";
+import EdtIcsSlashCommand from "./slashCommands/edtIcs.slashCommand";
 import AideSlashCommand from "./slashCommands/aide.slashCommand";
 import EdtSlashCommand from "./slashCommands/edt.slashCommand";
 import InfoSlashCommand from "./slashCommands/info.slashCommand";
@@ -82,6 +83,8 @@ class SlashCommands {
         // PUBLIC COMMANDS
 
         commands.push(await MenuSlashCommand.getSlashCommand());
+
+        commands.push(EdtIcsSlashCommand.getSlashCommand());
 
         commands.push(AideSlashCommand.getSlashCommand());
         commands.push(EdtSlashCommand.getSlashCommand());
