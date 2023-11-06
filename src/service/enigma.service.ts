@@ -12,7 +12,7 @@ import { getMomentDate } from "../utils/dates";
 import Cursus from "../utils/enum/Cursus";
 import { capitalize } from "../utils/stringManager";
 import DiscordFormatterService from "./discordFormatter.service";
-import icsService from "./ics.service";
+import EdtIcsService from "./edtics.service";
 
 class EnigmaService {
     public async getEdtFileDataFromApi(cursus: Cursus): Promise<EdtFile> {
@@ -107,7 +107,7 @@ class EnigmaService {
                     datas: edtDatas,
                 };
 
-                const icsDatas = icsService.generateIcsFile(edtDb, cursus);
+                const icsDatas = EdtIcsService.generateIcsFile(edtDb, cursus);
 
                 firebaseRepository.createData("edt", cursus, {
                     ...edtDb,
@@ -278,7 +278,7 @@ class EnigmaService {
                 datas: edtDatas,
             };
 
-            const icsDatas = icsService.generateIcsFile(edtDbWithoutIcs, cursus);
+            const icsDatas = EdtIcsService.generateIcsFile(edtDbWithoutIcs, cursus);
 
             return {
                 ...edtDbWithoutIcs,
@@ -302,7 +302,7 @@ class EnigmaService {
             datas: edtDatas,
         };
 
-        const icsDatas = icsService.generateIcsFile(edtDbWithoutIcs, cursus);
+        const icsDatas = EdtIcsService.generateIcsFile(edtDbWithoutIcs, cursus);
 
         return {
             ...edtDbWithoutIcs,

@@ -1,7 +1,7 @@
 import { CacheType, Client, Interaction, Message, ModalSubmitInteraction, TextChannel } from "discord.js";
 import { ADMIN_USERS } from "../utils/constants/Admin";
 import CommandType from "../utils/enum/CommandType";
-import ics from "./actions/ics.action";
+import ics from "./actions/edtics.action";
 import menu from "./actions/menu.action";
 import { aide } from "./aide";
 import { edt } from "./edt";

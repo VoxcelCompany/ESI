@@ -6,7 +6,7 @@ import { getMomentDate } from "../utils/dates";
 import Cursus from "../utils/enum/Cursus";
 import { capitalize } from "../utils/stringManager";
 
-class IcsService {
+class EdtIcsService {
     public async getIcsFile(cursus: Cursus): Promise<{ success: boolean; content: string }> {
         const ics = (await firebaseRepository.getData("edt", cursus)) as EdtDb;
 
@@ -60,4 +60,4 @@ class IcsService {
     }
 }
 
-export default new IcsService();
+export default new EdtIcsService();

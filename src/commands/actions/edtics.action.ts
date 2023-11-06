@@ -1,6 +1,6 @@
 import { CacheType, GuildMember, InteractionReplyOptions, ModalSubmitInteraction } from "discord.js";
 import edtService from "../../service/edt.service";
-import icsService from "../../service/ics.service";
+import EdtIcsService from "../../service/edtics.service";
 import { CURSUS } from "../../utils/constants/Cursus";
 import CommandType from "../../utils/enum/CommandType";
 import Cursus from "../../utils/enum/Cursus";
@@ -22,11 +22,7 @@ export default async (params: IcsParams): Promise<void> => {
     let selectedCursus: Cursus;
 
     if (cursus) {
-        if (type == CommandType.BUTTON) {
-            selectedCursus = cursus.toUpperCase() as Cursus;
-        } else {
-            selectedCursus = CURSUS[+cursus - 1];
-        }
+        selectedCursus = type == CommandType.BUTTON ? (cursus.toUpperCase() as Cursus) : CURSUS[+cursus - 1];
     } else {
         const userCursusRes = edtService.getUserCursus(interaction.member as GuildMember);
 
@@ -48,7 +44,7 @@ export default async (params: IcsParams): Promise<void> => {
         }
     }
 
-    const icsDatas = await icsService.getIcsFile(selectedCursus);
+    const icsDatas = await EdtIcsService.getIcsFile(selectedCursus);
 
     if (!icsDatas.success) {
         await interaction.editReply(icsDatas.content);
@@ -75,6 +71,4 @@ export default async (params: IcsParams): Promise<void> => {
     } else {
         await interaction.editReply(messageContent);
     }
-
-    return;
 };

@@ -1,5 +1,5 @@
 import { ApplicationCommandData, Client, SlashCommandBuilder } from "discord.js";
-import DownloadIcsSlashCommand from "./slashCommands/ics.slashCommand";
+import DownloadIcsSlashCommand from "./slashCommands/edtics.slashCommand";
 import MenuSlashCommand from "./slashCommands/menu.slashCommand";
 
 class SlashCommands {
