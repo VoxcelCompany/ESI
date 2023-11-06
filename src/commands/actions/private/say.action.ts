@@ -1,5 +1,5 @@
 import { CacheType, Client, GuildTextBasedChannel, Message, ModalSubmitInteraction } from "discord.js";
-import CommandType from "../../utils/enum/CommandType";
+import CommandType from "../../../utils/enum/CommandType";
 
 interface SayParams {
     client: Client;
@@ -9,7 +9,7 @@ interface SayParams {
     type: CommandType;
 }
 
-export const say = async (params: SayParams): Promise<void> => {
+export default async (params: SayParams): Promise<void> => {
     const { interaction, client, message, channelId, type } = params;
 
     if (type === CommandType.COMMAND) await (interaction as ModalSubmitInteraction).deferReply({ ephemeral: true });
