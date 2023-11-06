@@ -1,13 +1,13 @@
-import {CacheType, Client, Interaction, Message, ModalSubmitInteraction, TextChannel} from "discord.js";
+import { CacheType, Client, Interaction, Message, ModalSubmitInteraction, TextChannel } from "discord.js";
 import { ADMIN_USERS } from "../utils/constants/Admin";
 import CommandType from "../utils/enum/CommandType";
-import { aide } from "./aide";
-import { edt } from "./edt";
-import { info } from "./info";
-import { say } from "./private/say";
-import { wifi } from "./wifi";
-import { osi } from "./osi";
+import aide from "./actions/aide.action";
+import edt from "./actions/edt.action";
+import info from "./actions/info.action";
 import menu from "./actions/menu.action";
+import osi from "./actions/osi.action";
+import say from "./actions/private/say.action";
+import wifi from "./actions/wifi.action";
 
 export default async (
     interaction: any | Interaction<CacheType> | ModalSubmitInteraction<CacheType>,
@@ -52,17 +52,19 @@ export default async (
                 await osi({ interaction: interaction, choice: interaction.options.get("option").value });
                 return;
             case /^menu$/.test(commandName):
-                return await menu({
-                    chosenOption: interaction.options.get('jour').value,
+                await menu({
+                    chosenOption: interaction.options.get("jour").value,
                     interaction: interaction,
                     commandType: commandType,
                 });
+                return;
             case /^menu\d{2}\/\d{2}\/\d{4}$/.test(commandName):
-                return await menu({
-                    chosenOption: commandName.replace('menu', ''),
+                await menu({
+                    chosenOption: commandName.replace("menu", ""),
                     interaction: interaction,
                     commandType: commandType,
                 });
+                return;
             // admin commands
             case /^say$/.test(commandName):
                 await say({

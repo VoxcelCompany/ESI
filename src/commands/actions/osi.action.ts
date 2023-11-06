@@ -1,12 +1,12 @@
 import { CacheType, ModalSubmitInteraction } from "discord.js";
-import OsiChoice from "../utils/enum/OsiChoice";
+import OsiChoice from "../../utils/enum/OsiChoice";
 
 interface OsiParams {
     interaction: ModalSubmitInteraction<CacheType>;
     choice: string;
 }
 
-export const osi = async (params: OsiParams): Promise<void> => {
+export default async (params: OsiParams): Promise<void> => {
     const { interaction, choice } = params;
 
     await interaction.deferReply({ ephemeral: false });

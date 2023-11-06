@@ -1,12 +1,12 @@
 import { CacheType, ModalSubmitInteraction } from "discord.js";
-import HELP_FIELDS from "../utils/constants/HelpFields";
+import HELP_FIELDS from "../../utils/constants/HelpFields";
 
 interface AideParams {
     interaction: ModalSubmitInteraction<CacheType>;
     version: string;
 }
 
-export const aide = async (params: AideParams): Promise<void> => {
+export default async (params: AideParams): Promise<void> => {
     const { interaction, version } = params;
     await interaction.deferReply({
         ephemeral: false,
