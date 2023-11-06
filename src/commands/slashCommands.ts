@@ -1,4 +1,5 @@
 import { ApplicationCommandData, Client, SlashCommandBuilder } from "discord.js";
+import DownloadIcsSlashCommand from "./slashCommands/ics.slashCommand";
 import MenuSlashCommand from "./slashCommands/menu.slashCommand";
 
 class SlashCommands {
@@ -108,6 +109,8 @@ class SlashCommands {
         );
 
         commands.push(await MenuSlashCommand.getSlashCommand());
+
+        commands.push(DownloadIcsSlashCommand.getSlashCommand());
 
         // commands.push(new SlashCommandBuilder()
         //     .setName('stats')

@@ -1,13 +1,25 @@
 import { EventAttributes, createEvents } from "ics";
 import EdtDb from "../models/EdtDb";
+import firebaseRepository from "../repository/firebase.repository";
 import EDT_DB_DATE_FORMAT from "../utils/constants/EdtDbDateFormat";
 import { getMomentDate } from "../utils/dates";
 import Cursus from "../utils/enum/Cursus";
 import { capitalize } from "../utils/stringManager";
 
 class IcsService {
-    public getIcsFile() {
-        return "ics";
+    public async getIcsFile(cursus: Cursus): Promise<{ success: boolean; content: string }> {
+        const ics = (await firebaseRepository.getData("edt", cursus)) as EdtDb;
+
+        if (!ics || !ics.icsDatas)
+            return {
+                success: false,
+                content: "Aucun emploi du temps trouvé",
+            };
+
+        return {
+            success: true,
+            content: ics.icsDatas,
+        };
     }
 
     public generateIcsFile(edtDatas: Omit<EdtDb, "icsDatas">, cursus: Cursus): string | false {
