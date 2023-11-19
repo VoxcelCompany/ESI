@@ -31,18 +31,42 @@ class EdtIcsService {
             const courseDate = getMomentDate(date, EDT_DB_DATE_FORMAT);
 
             if (course.morning) {
+                const morningHour = courseDate.hour(9).minute(30);
+                if (morningHour.utcOffset() === 60 && process.env.NODE_ENV !== "development")
+                    morningHour.subtract(1, "hours");
+                else if (morningHour.utcOffset() === 120 && process.env.NODE_ENV !== "development")
+                    morningHour.subtract(2, "hours");
+
                 events.push({
                     title: course.morning,
-                    start: [courseDate.year(), courseDate.month() + 1, courseDate.date(), 9, 30],
+                    start: [
+                        courseDate.year(),
+                        courseDate.month() + 1,
+                        courseDate.date(),
+                        morningHour.hour(),
+                        morningHour.minute(),
+                    ],
                     duration: { hours: 3, minutes: 30 },
                     calName,
                 });
             }
 
             if (course.afternoon) {
+                const afternoonHour = courseDate.hour(14).minute(0);
+                if (afternoonHour.utcOffset() === 60 && process.env.NODE_ENV !== "development")
+                    afternoonHour.subtract(1, "hours");
+                else if (afternoonHour.utcOffset() === 120 && process.env.NODE_ENV !== "development")
+                    afternoonHour.subtract(2, "hours");
+
                 events.push({
                     title: course.afternoon,
-                    start: [courseDate.year(), courseDate.month() + 1, courseDate.date(), 14, 0],
+                    start: [
+                        courseDate.year(),
+                        courseDate.month() + 1,
+                        courseDate.date(),
+                        afternoonHour.hour(),
+                        afternoonHour.minute(),
+                    ],
                     duration: { hours: 3, minutes: 30 },
                     calName,
                 });
