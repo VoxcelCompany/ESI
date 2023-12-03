@@ -23,3 +23,10 @@ export const getCustomizedDate = (semaine: number = 0): Moment => {
 
     return date.isoWeekday(1);
 };
+
+export const autoOffsetDate = (date: Moment): Moment => {
+    if (date.utcOffset() === 60 && process.env.NODE_ENV !== "development") date.subtract(1, "hours");
+    else if (date.utcOffset() === 120 && process.env.NODE_ENV !== "development") date.subtract(2, "hours");
+
+    return date;
+};

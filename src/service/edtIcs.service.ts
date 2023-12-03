@@ -2,7 +2,7 @@ import { EventAttributes, createEvents } from "ics";
 import EdtDb from "../models/EdtDb";
 import firebaseRepository from "../repository/firebase.repository";
 import EDT_DB_DATE_FORMAT from "../utils/constants/EdtDbDateFormat";
-import { getMomentDate } from "../utils/dates";
+import { autoOffsetDate, getMomentDate } from "../utils/dates";
 import Cursus from "../utils/enum/Cursus";
 import { capitalize } from "../utils/stringManager";
 
@@ -31,11 +31,7 @@ class EdtIcsService {
             const courseDate = getMomentDate(date, EDT_DB_DATE_FORMAT);
 
             if (course.morning) {
-                const morningHour = courseDate.hour(9).minute(30);
-                if (morningHour.utcOffset() === 60 && process.env.NODE_ENV !== "development")
-                    morningHour.subtract(1, "hours");
-                else if (morningHour.utcOffset() === 120 && process.env.NODE_ENV !== "development")
-                    morningHour.subtract(2, "hours");
+                const morningHour = autoOffsetDate(courseDate.hour(9).minute(30));
 
                 events.push({
                     title: course.morning,
@@ -52,11 +48,7 @@ class EdtIcsService {
             }
 
             if (course.afternoon) {
-                const afternoonHour = courseDate.hour(14).minute(0);
-                if (afternoonHour.utcOffset() === 60 && process.env.NODE_ENV !== "development")
-                    afternoonHour.subtract(1, "hours");
-                else if (afternoonHour.utcOffset() === 120 && process.env.NODE_ENV !== "development")
-                    afternoonHour.subtract(2, "hours");
+                const afternoonHour = autoOffsetDate(courseDate.hour(14).minute(0));
 
                 events.push({
                     title: course.afternoon,
