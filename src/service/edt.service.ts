@@ -137,7 +137,7 @@ class EdtService {
         };
 
         const messageContent = {
-            content: `[🗓️ **__${
+            content: `🗓️ [**__${
                 diplayWeek[weekNumber] !== undefined ? diplayWeek[weekNumber] : `Dans ${weekNumber} semaines`
             }__ ↔ ${displayDate}**](${userCursus == Cursus.CYBER ? process.env.LINK_CYBER : process.env.LINK_RETAIL}) `,
             embeds: [
