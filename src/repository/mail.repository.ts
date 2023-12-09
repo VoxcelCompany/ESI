@@ -10,16 +10,13 @@ class MailRepository {
             },
             params: {
                 $select: "subject,from,receivedDateTime",
-                $filter: `from/emailAddress/address eq '${email}'`,
+                $filter: `receivedDateTime ge 1900-01-01T00:00:00Z and from/emailAddress/address eq '${email}'`,
+                $orderby: "receivedDateTime desc",
+                $top: 1,
             },
         });
 
-        const orderedMails = response.data.value.sort((a, b) => {
-            return new Date(b.receivedDateTime).getTime() - new Date(a.receivedDateTime).getTime();
-        });
-
-
-        return orderedMails[0] ?? null;
+        return response.data?.value?.[0] || null;
     }
 }
 
