@@ -24,7 +24,7 @@ RUN npm ci
 
 # Copy application code
 COPY . .
-
+COPY --chown=node:node .env .env
 
 # Final stage for app image
 FROM base
