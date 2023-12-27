@@ -32,13 +32,13 @@ jobs:
         uses: actions/checkout@v4
 
       # Staging environment
-      - name: Create .env file for staging
-        if: github.ref == 'refs/heads/main'
-        run: echo "${{ secrets.ENV_STG }}" > .env
+      # - name: Create .env file for staging
+      #   if: github.ref == 'refs/heads/main'
+      #   run: echo "${{ secrets.ENV_STG }}" > .env
 
       # Production environment
       - name: Create .env file for production
-        if: github.event_name == 'release' && github.ref_type == 'tag'
+        if: github.ref == 'refs/heads/main'
         run: echo "${{ secrets.ENV_PRD }}" > .env
 
       - name: Login to Registry
