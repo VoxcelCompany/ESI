@@ -1,16 +1,88 @@
-name: Fly Deploy
-on:
-    push:
-        branches:
-            - main
-env:
-    FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+name: Build and Deploy
 
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+env:
+  # TO BE DEFINED
+  DOCKER_IMAGE_NAME: esi-bot
+  # -------------
+  ENV_PREFIX: prd
+
+# DO NOT TOUCH
 jobs:
-    deploy:
-        name: Deploy app
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v3
-            - uses: superfly/flyctl-actions/setup-flyctl@master
-            - run: flyctl deploy --remote-only
+  setup:
+    runs-on: self-hosted
+
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq docker.io docker-compose
+
+  build:
+    needs: setup
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Staging environment
+      - name: Create .env file for staging
+        if: github.ref == 'refs/heads/main'
+        run: echo "${{ secrets.ENV_STG }}" > .env
+
+      # Production environment
+      - name: Create .env file for production
+        if: github.event_name == 'release' && github.ref_type == 'tag'
+        run: echo "${{ secrets.ENV_PRD }}" > .env
+
+      - name: Login to Registry
+        run: echo ${{ secrets.VXL_REG_PWD }} | docker login ${{ secrets.VXL_REG_URL }} -u ${{ secrets.VXL_REG_USR }} --password-stdin
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ secrets.VXL_REG_BASE }}/${{ secrets.VXL_REG_FLD }}:${ENV_PREFIX}_${DOCKER_IMAGE_NAME} .
+          docker push ${{ secrets.VXL_REG_BASE }}/${{ secrets.VXL_REG_FLD }}:${ENV_PREFIX}_${DOCKER_IMAGE_NAME}
+
+      - name: Logout from Registry and remove image
+        run: |
+          docker logout ${{ secrets.VXL_REG_URL }}
+          docker rmi ${{ secrets.VXL_REG_BASE }}/${{ secrets.VXL_REG_FLD }}:${ENV_PREFIX}_${DOCKER_IMAGE_NAME}
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Retrieve image from Registry
+        run: |
+          docker pull ${{ secrets.VXL_REG_BASE }}/${{ secrets.VXL_REG_FLD }}:${ENV_PREFIX}_${DOCKER_IMAGE_NAME}
+          docker tag ${{ secrets.VXL_REG_BASE }}/${{ secrets.VXL_REG_FLD }}:${ENV_PREFIX}_${DOCKER_IMAGE_NAME} ${ENV_PREFIX}_${DOCKER_IMAGE_NAME}
+
+      - name: Deploy to Server
+        run: |
+          export DOCKER_IMAGE_NAME=${ENV_PREFIX}_${DOCKER_IMAGE_NAME}
+          docker-compose -f docker-compose-${ENV_PREFIX}.yml up -d
+
+  clean-up:
+    needs: deploy
+    runs-on: self-hosted
+
+    steps:
+      - name: Clean image from Registry
+        run: |
+          TOKEN=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "${{ secrets.VXL_REG_USR }}", "password": "${{ secrets.VXL_REG_PWD }}"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
+          curl -X DELETE -H "Authorization: Bearer $TOKEN" https://hub.docker.com/v2/repositories/${{ secrets.VXL_REG_BASE }}/${{ secrets.VXL_REG_FLD }}/tags/voxcel-ihm || echo "Image not found"
+
+      - name: Clean images from Server
+        run: |
+          docker rmi ${{ secrets.VXL_REG_BASE }}/${{ secrets.VXL_REG_FLD }}:${ENV_PREFIX}_${DOCKER_IMAGE_NAME} || echo "Image not found"
+          docker image prune -fa || echo "No images to prune"
