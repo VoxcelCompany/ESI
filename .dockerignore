@@ -132,6 +132,5 @@ node_modules
 /build
 
 # misc
-.env
 dist
 test.js
