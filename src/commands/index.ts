@@ -133,11 +133,5 @@ export const messageReceived = async (message: Message, client: Client): Promise
         case /bien du plaisir/i.test(message.content):
             await message.channel.send("Dixit Thietty !");
             return;
-        case /quoi/i.test(message.content):
-            await message.react("1123213505215070248");
-            return;
-        case /$feur/i.test(message.content):
-            await message.react("🔴");
-            return;
     }
 };
