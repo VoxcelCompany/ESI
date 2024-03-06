@@ -2,7 +2,7 @@ import { EventAttributes, createEvents } from "ics";
 import EdtDb from "../models/EdtDb";
 import firebaseRepository from "../repository/firebase.repository";
 import EDT_DB_DATE_FORMAT from "../utils/constants/EdtDbDateFormat";
-import { getMomentDate } from "../utils/dates";
+import { autoOffsetDate, getMomentDate } from "../utils/dates";
 import Cursus from "../utils/enum/Cursus";
 import { capitalize } from "../utils/stringManager";
 
@@ -31,18 +31,34 @@ class EdtIcsService {
             const courseDate = getMomentDate(date, EDT_DB_DATE_FORMAT);
 
             if (course.morning) {
+                const morningHour = autoOffsetDate(courseDate.hour(9).minute(30));
+
                 events.push({
                     title: course.morning,
-                    start: [courseDate.year(), courseDate.month() + 1, courseDate.date(), 9, 30],
+                    start: [
+                        courseDate.year(),
+                        courseDate.month() + 1,
+                        courseDate.date(),
+                        morningHour.hour(),
+                        morningHour.minute(),
+                    ],
                     duration: { hours: 3, minutes: 30 },
                     calName,
                 });
             }
 
             if (course.afternoon) {
+                const afternoonHour = autoOffsetDate(courseDate.hour(14).minute(0));
+
                 events.push({
                     title: course.afternoon,
-                    start: [courseDate.year(), courseDate.month() + 1, courseDate.date(), 14, 0],
+                    start: [
+                        courseDate.year(),
+                        courseDate.month() + 1,
+                        courseDate.date(),
+                        afternoonHour.hour(),
+                        afternoonHour.minute(),
+                    ],
                     duration: { hours: 3, minutes: 30 },
                     calName,
                 });
